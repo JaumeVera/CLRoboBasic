@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec java -enableassertions -jar /home2/users/alumnes/1136162/dades/linux/Q10/CL/RoboBASIC/bin/Asl.jar "$@"

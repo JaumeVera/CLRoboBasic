@@ -1,0 +1,20 @@
+func main()
+  inirobot 270,150,-90;
+  noobstacle green,blue;
+  pinta down;
+  obstacle 100,100,100,100,red,red;
+  while not(sentir and 4) do
+    avanca 1;
+  endwhile;
+  while not(sentir and 16) do
+    gira 1;
+  endwhile;
+  while true do
+    while not(sentir and 8) do
+      gira -1;
+    endwhile;
+    while not(sentir and 8) do
+      avanca 1;
+    endwhile;
+  endwhile;
+endfunc

@@ -1,0 +1,81 @@
+digraph {
+
+	ordering=out;
+	ranksep=.4;
+	bgcolor="lightgrey"; node [shape=box, fixedsize=false, fontsize=12, fontname="Helvetica-bold", fontcolor="blue"
+		width=.25, height=.25, color="black", fillcolor="white", style="filled, solid, bold"];
+	edge [arrowsize=.5, color="black", style="bold"]
+
+  n0 [label="LIST_FUNCTIONS"];
+  n1 [label="func"];
+  n1 [label="func"];
+  n2 [label="main"];
+  n3 [label="PARAMS"];
+  n4 [label="LIST_INSTR"];
+  n4 [label="LIST_INSTR"];
+  n5 [label="inirobot"];
+  n5 [label="inirobot"];
+  n6 [label="270"];
+  n7 [label="150"];
+  n8 [label="-"];
+  n8 [label="-"];
+  n9 [label="90"];
+  n10 [label="noobstacle"];
+  n10 [label="noobstacle"];
+  n11 [label="green"];
+  n12 [label="blue"];
+  n13 [label="pinta"];
+  n13 [label="pinta"];
+  n14 [label="down"];
+  n15 [label="obstacle"];
+  n15 [label="obstacle"];
+  n16 [label="100"];
+  n17 [label="100"];
+  n18 [label="100"];
+  n19 [label="100"];
+  n20 [label="red"];
+  n21 [label="red"];
+  n22 [label="avanca"];
+  n22 [label="avanca"];
+  n23 [label="1"];
+  n24 [label="sentir"];
+  n25 [label="gira"];
+  n25 [label="gira"];
+  n26 [label="1"];
+  n27 [label="gira"];
+  n27 [label="gira"];
+  n28 [label="-"];
+  n28 [label="-"];
+  n29 [label="1"];
+
+  n0 -> n1 // "LIST_FUNCTIONS" -> "func"
+  n1 -> n2 // "func" -> "main"
+  n1 -> n3 // "func" -> "PARAMS"
+  n1 -> n4 // "func" -> "LIST_INSTR"
+  n4 -> n5 // "LIST_INSTR" -> "inirobot"
+  n5 -> n6 // "inirobot" -> "270"
+  n5 -> n7 // "inirobot" -> "150"
+  n5 -> n8 // "inirobot" -> "-"
+  n8 -> n9 // "-" -> "90"
+  n4 -> n10 // "LIST_INSTR" -> "noobstacle"
+  n10 -> n11 // "noobstacle" -> "green"
+  n10 -> n12 // "noobstacle" -> "blue"
+  n4 -> n13 // "LIST_INSTR" -> "pinta"
+  n13 -> n14 // "pinta" -> "down"
+  n4 -> n15 // "LIST_INSTR" -> "obstacle"
+  n15 -> n16 // "obstacle" -> "100"
+  n15 -> n17 // "obstacle" -> "100"
+  n15 -> n18 // "obstacle" -> "100"
+  n15 -> n19 // "obstacle" -> "100"
+  n15 -> n20 // "obstacle" -> "red"
+  n15 -> n21 // "obstacle" -> "red"
+  n4 -> n22 // "LIST_INSTR" -> "avanca"
+  n22 -> n23 // "avanca" -> "1"
+  n4 -> n24 // "LIST_INSTR" -> "sentir"
+  n4 -> n25 // "LIST_INSTR" -> "gira"
+  n25 -> n26 // "gira" -> "1"
+  n4 -> n27 // "LIST_INSTR" -> "gira"
+  n27 -> n28 // "gira" -> "-"
+  n28 -> n29 // "-" -> "1"
+
+}

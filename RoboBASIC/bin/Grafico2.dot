@@ -1,0 +1,156 @@
+digraph {
+
+	ordering=out;
+	ranksep=.4;
+	bgcolor="lightgrey"; node [shape=box, fixedsize=false, fontsize=12, fontname="Helvetica-bold", fontcolor="blue"
+		width=.25, height=.25, color="black", fillcolor="white", style="filled, solid, bold"];
+	edge [arrowsize=.5, color="black", style="bold"]
+
+  n0 [label="LIST_FUNCTIONS"];
+  n1 [label="func"];
+  n1 [label="func"];
+  n2 [label="main"];
+  n3 [label="PARAMS"];
+  n4 [label="LIST_INSTR"];
+  n4 [label="LIST_INSTR"];
+  n5 [label="inirobot"];
+  n5 [label="inirobot"];
+  n6 [label="270"];
+  n7 [label="150"];
+  n8 [label="-"];
+  n8 [label="-"];
+  n9 [label="90"];
+  n10 [label="noobstacle"];
+  n10 [label="noobstacle"];
+  n11 [label="green"];
+  n12 [label="blue"];
+  n13 [label="pinta"];
+  n13 [label="pinta"];
+  n14 [label="down"];
+  n15 [label="obstacle"];
+  n15 [label="obstacle"];
+  n16 [label="100"];
+  n17 [label="100"];
+  n18 [label="100"];
+  n19 [label="100"];
+  n20 [label="red"];
+  n21 [label="red"];
+  n22 [label="while"];
+  n22 [label="while"];
+  n23 [label="not"];
+  n23 [label="not"];
+  n24 [label="and"];
+  n24 [label="and"];
+  n25 [label="sentir"];
+  n26 [label="4"];
+  n27 [label="LIST_INSTR"];
+  n27 [label="LIST_INSTR"];
+  n28 [label="avanca"];
+  n28 [label="avanca"];
+  n29 [label="1"];
+  n30 [label="while"];
+  n30 [label="while"];
+  n31 [label="not"];
+  n31 [label="not"];
+  n32 [label="and"];
+  n32 [label="and"];
+  n33 [label="sentir"];
+  n34 [label="16"];
+  n35 [label="LIST_INSTR"];
+  n35 [label="LIST_INSTR"];
+  n36 [label="gira"];
+  n36 [label="gira"];
+  n37 [label="1"];
+  n38 [label="while"];
+  n38 [label="while"];
+  n39 [label="true"];
+  n40 [label="LIST_INSTR"];
+  n40 [label="LIST_INSTR"];
+  n41 [label="while"];
+  n41 [label="while"];
+  n42 [label="not"];
+  n42 [label="not"];
+  n43 [label="and"];
+  n43 [label="and"];
+  n44 [label="sentir"];
+  n45 [label="8"];
+  n46 [label="LIST_INSTR"];
+  n46 [label="LIST_INSTR"];
+  n47 [label="gira"];
+  n47 [label="gira"];
+  n48 [label="-"];
+  n48 [label="-"];
+  n49 [label="1"];
+  n50 [label="while"];
+  n50 [label="while"];
+  n51 [label="not"];
+  n51 [label="not"];
+  n52 [label="and"];
+  n52 [label="and"];
+  n53 [label="sentir"];
+  n54 [label="8"];
+  n55 [label="LIST_INSTR"];
+  n55 [label="LIST_INSTR"];
+  n56 [label="avanca"];
+  n56 [label="avanca"];
+  n57 [label="1"];
+
+  n0 -> n1 // "LIST_FUNCTIONS" -> "func"
+  n1 -> n2 // "func" -> "main"
+  n1 -> n3 // "func" -> "PARAMS"
+  n1 -> n4 // "func" -> "LIST_INSTR"
+  n4 -> n5 // "LIST_INSTR" -> "inirobot"
+  n5 -> n6 // "inirobot" -> "270"
+  n5 -> n7 // "inirobot" -> "150"
+  n5 -> n8 // "inirobot" -> "-"
+  n8 -> n9 // "-" -> "90"
+  n4 -> n10 // "LIST_INSTR" -> "noobstacle"
+  n10 -> n11 // "noobstacle" -> "green"
+  n10 -> n12 // "noobstacle" -> "blue"
+  n4 -> n13 // "LIST_INSTR" -> "pinta"
+  n13 -> n14 // "pinta" -> "down"
+  n4 -> n15 // "LIST_INSTR" -> "obstacle"
+  n15 -> n16 // "obstacle" -> "100"
+  n15 -> n17 // "obstacle" -> "100"
+  n15 -> n18 // "obstacle" -> "100"
+  n15 -> n19 // "obstacle" -> "100"
+  n15 -> n20 // "obstacle" -> "red"
+  n15 -> n21 // "obstacle" -> "red"
+  n4 -> n22 // "LIST_INSTR" -> "while"
+  n22 -> n23 // "while" -> "not"
+  n23 -> n24 // "not" -> "and"
+  n24 -> n25 // "and" -> "sentir"
+  n24 -> n26 // "and" -> "4"
+  n22 -> n27 // "while" -> "LIST_INSTR"
+  n27 -> n28 // "LIST_INSTR" -> "avanca"
+  n28 -> n29 // "avanca" -> "1"
+  n4 -> n30 // "LIST_INSTR" -> "while"
+  n30 -> n31 // "while" -> "not"
+  n31 -> n32 // "not" -> "and"
+  n32 -> n33 // "and" -> "sentir"
+  n32 -> n34 // "and" -> "16"
+  n30 -> n35 // "while" -> "LIST_INSTR"
+  n35 -> n36 // "LIST_INSTR" -> "gira"
+  n36 -> n37 // "gira" -> "1"
+  n4 -> n38 // "LIST_INSTR" -> "while"
+  n38 -> n39 // "while" -> "true"
+  n38 -> n40 // "while" -> "LIST_INSTR"
+  n40 -> n41 // "LIST_INSTR" -> "while"
+  n41 -> n42 // "while" -> "not"
+  n42 -> n43 // "not" -> "and"
+  n43 -> n44 // "and" -> "sentir"
+  n43 -> n45 // "and" -> "8"
+  n41 -> n46 // "while" -> "LIST_INSTR"
+  n46 -> n47 // "LIST_INSTR" -> "gira"
+  n47 -> n48 // "gira" -> "-"
+  n48 -> n49 // "-" -> "1"
+  n40 -> n50 // "LIST_INSTR" -> "while"
+  n50 -> n51 // "while" -> "not"
+  n51 -> n52 // "not" -> "and"
+  n52 -> n53 // "and" -> "sentir"
+  n52 -> n54 // "and" -> "8"
+  n50 -> n55 // "while" -> "LIST_INSTR"
+  n55 -> n56 // "LIST_INSTR" -> "avanca"
+  n56 -> n57 // "avanca" -> "1"
+
+}
