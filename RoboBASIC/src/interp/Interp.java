@@ -376,38 +376,6 @@ public class Interp {
 		}
 		programa.add(instruct);
 		break;
-	   case AslLexer.NOOBSTACLE:
-		String instruct = "rInvisible ";
-		int i = 0;
-		while (t.getChild(i) != NULL) {
-		  instruct = t.getChild(i).getStringValue();
-		  instruct += string;
-		  instruct += ", ";
-		  ++i;
-		}
-		programa.add(instruct);
-		break;	  
-	   case AslLexer.PINTAR:
-		String instruct = "rPen ";
-		  instruct = t.getChild(0).getStringValue();
-		  instruct += string;
-		programa.add(instruct);
-		break;	 
-	  case AslLexer.AVANCA:
-		String instruct = "rForward ";
-		  instruct = t.getChild(0).getStringValue();
-		  instruct += string;
-		programa.add(instruct);
-		break;
-	  case AslLexer.GIRA:
-		String instruct = "rTurn ";
-		  instruct = t.getChild(0).getStringValue();
-		  if (t.getChild(0).getStringValue() == "-") {
-		       instruct += t.getChild(0).getChild(0).getStringValue();
-		  }
-		  instruct += string;
-		programa.add(instruct);
-		break;
             default: break;
         }
 
