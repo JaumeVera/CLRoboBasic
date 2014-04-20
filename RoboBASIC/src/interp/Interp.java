@@ -63,7 +63,7 @@ public class Interp {
     /** Nested levels of function calls. */
     private int function_nesting = -1;
     
-    /** Arraylist*/
+    /** String program in ArrayList form*/
     private ArrayList<String> programa;
     
     /**
@@ -88,6 +88,11 @@ public class Interp {
         function_nesting = -1;
     }
 
+    public ArrayList getVector(){
+      evaluateFunction ("main", null);
+      return programa;
+    }
+    
     /** Runs the program by calling the main function without parameters. */
     public void Run() {
         executeFunction ("main", null);
@@ -202,6 +207,59 @@ public class Interp {
         return result;
     }
 
+/**
+     * Evaluates a function.
+     * @param funcname The name of the function.
+     * @param args The AST node representing the list of arguments of the caller.
+     * @return The data returned by the function.
+     */
+    private void evaluateFunction (String funcname, AslTree args) {
+        // Get the AST of the function
+        AslTree f = FuncName2Tree.get(funcname);
+        if (f == null) throw new RuntimeException(" function " + funcname + " not declared");
+
+        // Gather the list of arguments of the caller. This function
+        // performs all the checks required for the compatibility of
+        // parameters.
+        ArrayList<Data> Arg_values = listArguments(f, args);
+        // Dumps trace information (function call and arguments)
+        if (trace != null) traceFunctionCall(f, Arg_values);
+        
+        // List of parameters of the callee
+        AslTree p = f.getChild(1);
+        int nparam = p.getChildCount(); // Number of parameters
+        
+        // Track line number
+        setLineNumber(f);
+         
+        // Copy the parameters to the current activation record
+        for (int i = 0; i < nparam; ++i) {
+            String param_name = p.getChild(i).getText();
+            Stack.defineVariable(param_name, Arg_values.get(i), -1);
+        }
+
+        // Execute the instructions
+        writeListInstructions (f.getChild(2));
+
+    }
+    
+    /**
+     * Writes a block of instructions. The block is terminated
+     * as soon as an instruction returns a non-null result.
+     * Non-null results are only returned by "return" statements.
+     * @param t The AST of the block of instructions.
+     * @return The data returned by the instructions (null if no return
+     * statement has been executed).
+     */
+    private void writeListInstructions (AslTree t) {
+        assert t != null;
+        Data result = null;
+        int ninstr = t.getChildCount();
+        for (int i = 0; i < ninstr; ++i) {
+            writeInstruction (t.getChild(i));
+        }
+    }
+    
     /**
      * Executes a block of instructions. The block is terminated
      * as soon as an instruction returns a non-null result.
@@ -219,6 +277,137 @@ public class Interp {
             if (result != null) return result;
         }
         return null;
+    }
+
+    /**
+     * Writes an instruction. 
+     * Non-null results are only returned by "return" statements.
+     * @param t The AST of the instruction.
+     * @return The data returned by the instruction. The data will be
+     * non-null only if a return statement is executed or a block
+     * of instructions executing a return.
+     */
+    private void writeInstruction (AslTree t) {
+        assert t != null;
+        
+        setLineNumber(t);
+        Data value; // The returned value
+
+        // A big switch for all type of instructions
+        switch (t.getType()) {
+
+            // Assignment
+            case AslLexer.ASSIGN:
+                value = evaluateExpression(t.getChild(1));
+                //Here goes the ARRAY
+                AslTree tson = t.getChild(0);
+                if(tson.getType() == AslLexer.LBRACK){
+		  Stack.defineVariable(tson.getChild(0).getText(), value, tson.getChild(1).getIntValue());
+                }
+                else Stack.defineVariable (t.getChild(0).getText(), value, -1);
+                break;
+
+            // If-then-else
+            case AslLexer.IF:
+                value = evaluateExpression(t.getChild(0));
+                checkBoolean(value);
+                if (value.getBooleanValue()) writeListInstructions(t.getChild(1));
+                // Is there else statement ?
+                if (t.getChildCount() == 3) writeListInstructions(t.getChild(2));
+                break;
+
+            // While
+            case AslLexer.WHILE:
+                while (true) {
+                    value = evaluateExpression(t.getChild(0));
+                    checkBoolean(value);
+                    if (!value.getBooleanValue()) break;
+                    Data r = executeListInstructions(t.getChild(1));
+                    if (r != null) break;
+                }
+
+            // Return
+            case AslLexer.RETURN:
+                if (t.getChildCount() != 0) {
+                }
+		break;
+            // Read statement: reads a variable and raises an exception
+            // in case of a format error.
+            case AslLexer.READ:
+                String token = null;
+                Data val = new Data(0);;
+                try {
+                    token = stdin.next();
+                    val.setValue(Integer.parseInt(token)); 
+                } catch (NumberFormatException ex) {
+                    throw new RuntimeException ("Format error when reading a number: " + token);
+                }
+                /*AslTree tson = t.getChild(0);
+                if(tson.getType() == AslLexer.LBRACK){
+		  Stack.defineVariable(tson.getChild(0).getText(), val, tson.getChild(1).getIntValue);
+                }
+                else*/
+		break;
+            // Write statement: it can write an expression or a string.
+            case AslLexer.WRITE:
+                AslTree v = t.getChild(0);
+                // Special case for strings
+                if (v.getType() == AslLexer.STRING) {
+                    System.out.format(v.getStringValue());
+                }
+                // Write an expression
+                System.out.print(evaluateExpression(v).toString());
+                break;
+                
+            case AslLexer.INIROBOT:
+		String instruct = "rLocate ";
+		int n = t.getChildCount();
+		for(int i = 0; i < n-1; i++){
+		  String str = evalRoboBasic(t.getChild(i)); //FUNCION DE EVALUAR CHUNGA;
+		  instruct += str;
+		  instruct += ", ";
+		}
+		String str = evalRoboBasic(t.getChild(t.getChildCount()-1));
+		instruct += str;
+		programa.add(instruct);
+		break;
+	   case AslLexer.NOBSTACLE:
+		instruct = "rInvisible ";
+		n = t.getChildCount();
+		for (int i = 0; i < n-1; i++) {
+		  str = evalRoboBasic(t.getChild(i)); //FUNCION DE EVALUAR CHUNGA;
+		  instruct += str;
+		  instruct += ", ";
+		}
+		str = evalRoboBasic(t.getChild(t.getChildCount()-1));
+		instruct += str;
+		programa.add(instruct);
+		break;	  
+	   case AslLexer.PINTARCOLOR:
+		instruct = "rPen ";
+		str = t.getChild(0).getStringValue();
+		instruct += str;
+		programa.add(instruct);
+		break;	 
+	  case AslLexer.AVAN:
+		instruct = "rForward ";
+		str = t.getChild(0).getStringValue();
+		instruct += str;
+		programa.add(instruct);
+		break;
+	  case AslLexer.GIRA:
+		instruct = "rTurn ";
+		str = evalRoboBasic(t.getChild(0)); //FUNCION DE EVALUAR CHUNGA;
+		instruct += str;
+		programa.add(instruct);
+		break;
+
+            // Function call
+            case AslLexer.FUNCALL:
+		evaluateFunction(t.getChild(0).getText(), t.getChild(1));
+
+            default: assert false; // Should never happen
+        }
     }
     
     /**
@@ -305,10 +494,10 @@ public class Interp {
                 // Write an expression
                 System.out.print(evaluateExpression(v).toString());
                 return null;
-
+		
             // Function call
             case AslLexer.FUNCALL:
-                executeFunction(t.getChild(0).getText(), t.getChild(1));
+		evaluateFunction(t.getChild(0).getText(), t.getChild(1));
                 return null;
 
             default: assert false; // Should never happen
@@ -319,6 +508,19 @@ public class Interp {
         return null;
     }
 
+    /**
+     * Esta función se asegura que no haya ningún caracter o expresión que
+     * RoboBASIC no pueda asimilar y transforma la expresión y sus hijos
+     * en un String.
+     * @param t The AST of the expression
+     * @return The value of the expression.
+    */
+    
+    private String evalRoboBasic(AslTree t){ // Mirar comentario arriba
+      // Todavía no está implementada
+      return t.getStringValue();
+    }
+    
     /**
      * Evaluates the expression represented in the AST t.
      * @param t The AST of the expression
@@ -366,48 +568,6 @@ public class Interp {
 		  value = new Data(value.getArrayIntegerValue(value2.getIntegerValue()));
 		}
                 break;
-            case AslLexer.INIROBOT:
-		String instruct = "rLocate ";
-		for(int i = 0; i < 3; i++){
-		  t.getChild(i);
-		  //FUNCION DE EVALUAR CHUNGA;
-		  instruct += string;
-		  instruct += ", ";
-		}
-		programa.add(instruct);
-		break;
-	   case AslLexer.NOOBSTACLE:
-		String instruct = "rInvisible ";
-		int i = 0;
-		while (t.getChild(i) != NULL) {
-		  instruct = t.getChild(i).getStringValue();
-		  instruct += string;
-		  instruct += ", ";
-		  ++i;
-		}
-		programa.add(instruct);
-		break;	  
-	   case AslLexer.PINTAR:
-		String instruct = "rPen ";
-		  instruct = t.getChild(0).getStringValue();
-		  instruct += string;
-		programa.add(instruct);
-		break;	 
-	  case AslLexer.AVANCA:
-		String instruct = "rForward ";
-		  instruct = t.getChild(0).getStringValue();
-		  instruct += string;
-		programa.add(instruct);
-		break;
-	  case AslLexer.GIRA:
-		String instruct = "rTurn ";
-		  instruct = t.getChild(0).getStringValue();
-		  if (t.getChild(0).getStringValue() == "-") {
-		       instruct += t.getChild(0).getChild(0).getStringValue();
-		  }
-		  instruct += string;
-		programa.add(instruct);
-		break;
             default: break;
         }
 

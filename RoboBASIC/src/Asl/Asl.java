@@ -28,6 +28,7 @@
 package Asl;
 
 // Imports for ANTLR
+import java.util.ArrayList;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
@@ -120,10 +121,26 @@ public class Asl{
             try {
                 I = new Interp(t, tracefile); // prepares the interpreter
 		// Print string to an external file
-		vector<String> a = I.getVector();
+		ArrayList<String> a = I.getVector();
+		for (int i = 0; i < a.size(); i++){
+		  System.out.println(a.get(i));
+		}
 		// Strings
             }
-            catch{}
+	    catch (RuntimeException e) {
+                if (I != null) linenumber = I.lineNumber();
+                System.err.print ("Runtime error");
+                if (linenumber < 0) System.err.print (": ");
+                else System.err.print (" (" + infile + ", line " + linenumber + "): ");
+                System.err.println (e.getMessage() + ".");
+                System.err.format (I.getStackTrace());
+            } catch (StackOverflowError e) {
+                if (I != null) linenumber = I.lineNumber();
+                System.err.print("Stack overflow error");
+                if (linenumber < 0) System.err.print (".");
+                else System.err.println (" (" + infile + ", line " + linenumber + ").");
+                System.err.format (I.getStackTrace(5));
+            }
         }
     }
 
