@@ -167,7 +167,7 @@ atom    :   ID (LBRACK^ expr RBRACK!)?
         |   INT
         |   (b=TRUE | b=FALSE)  -> ^(BOOLEAN[$b,$b.text])
         |   funcall
-        |   '('! expr ')'!
+        |   LPAREN^ expr ')'!
         |   sensors
         ;
 
@@ -180,6 +180,7 @@ expr_list:  expr (','! expr)*
         ;
 
 // Basic tokens
+LPAREN	: '(' ;
 LBRACK	: '[' ;
 RBRACK	: ']' ;
 EQUAL	: '=' ;

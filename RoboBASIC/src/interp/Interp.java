@@ -375,23 +375,23 @@ public class Interp {
 		instruct = "rInvisible ";
 		n = t.getChildCount();
 		for (int i = 0; i < n-1; i++) {
-		  str = evalRoboBasic(t.getChild(i)); //FUNCION DE EVALUAR CHUNGA;
+		  str = t.getChild(i).getText(); //FUNCION DE EVALUAR CHUNGA;
 		  instruct += str;
 		  instruct += ", ";
 		}
-		str = evalRoboBasic(t.getChild(t.getChildCount()-1));
+		str = t.getChild(t.getChildCount()-1).getText();
 		instruct += str;
 		programa.add(instruct);
 		break;	  
 	   case AslLexer.PINTARCOLOR:
 		instruct = "rPen ";
-		str = t.getChild(0).getStringValue();
+		str = t.getChild(0).getText();
 		instruct += str;
 		programa.add(instruct);
 		break;	 
 	  case AslLexer.AVAN:
 		instruct = "rForward ";
-		str = t.getChild(0).getStringValue();
+		str = evalRoboBasic(t.getChild(0));
 		instruct += str;
 		programa.add(instruct);
 		break;
@@ -517,8 +517,116 @@ public class Interp {
     */
     
     private String evalRoboBasic(AslTree t){ // Mirar comentario arriba
-      // Todavía no está implementada
-      return t.getStringValue();
+      String toreturn = "";
+      assert t != null;
+
+      int previous_line = lineNumber();
+      setLineNumber(t);
+      int type = t.getType();
+
+      // Atoms
+      switch (type) {
+	// A variable
+	case AslLexer.ID:
+	case AslLexer.INT:
+	case AslLexer.BOOLEAN:
+	case AslLexer.COLOR:
+	    toreturn = t.getText();
+	    return toreturn;
+	// A function call. Checks that the function returns a result.
+	case AslLexer.FUNCALL:
+	    //????
+	    break;
+	// Array
+	case AslLexer.LBRACK:
+	  toreturn = t.getChild(0).getText();
+	  toreturn += "[";
+	  toreturn += evalRoboBasic(t.getChild(1));
+	  toreturn += "] ";
+	  return toreturn;
+	default: break;
+      }
+    
+      // Unary operators
+      if (t.getChildCount() == 1) {
+	  switch (type) {
+	      case AslLexer.PLUS:
+		  toreturn = "+";
+		  toreturn += evalRoboBasic(t.getChild(0));
+		  break;
+	      case AslLexer.MINUS:
+		  toreturn = "-";
+		  toreturn += evalRoboBasic(t.getChild(0));
+		  break;
+	      case AslLexer.NOT:
+		  toreturn = "!";
+		  toreturn += evalRoboBasic(t.getChild(0));
+		  break;
+	      case AslLexer.LPAREN:
+		toreturn = "(";
+		toreturn += evalRoboBasic(t.getChild(0));
+		toreturn += ")";
+		return toreturn;
+	      default: assert false; // Should never happen
+	  }
+	  return toreturn;
+      }
+      else{
+	// Two operands
+	String op = "";
+	switch (type) {
+	  // Relational operators
+	  case AslLexer.EQUAL:
+	      op = "==";
+	      break;
+	  case AslLexer.NOT_EQUAL:
+	      op = "!=";
+	      break;
+	  case AslLexer.LT:
+	      op = "<";
+	      break;
+	  case AslLexer.LE:
+	      op = "<=";
+	      break;
+	  case AslLexer.GT:
+	      op = ">";
+	      break;
+	  case AslLexer.GE:
+	      op = ">=";
+	      break;
+
+	  // Arithmetic operators
+	  case AslLexer.PLUS:
+	      op = "+";
+	      break;
+	  case AslLexer.MINUS:
+	      op = "-";
+	      break;
+	  case AslLexer.MUL:
+	      op = "*";
+	      break;
+	  case AslLexer.DIV:
+	      op = "/";
+	      break;
+	  case AslLexer.MOD:
+	      op = "%";
+	      break;
+
+	  // Boolean operators
+	  case AslLexer.AND:
+	      op = "&&";
+	      break;
+	  case AslLexer.OR:
+	      op = "||";
+	      break;
+
+	  default: assert false; // Should never happen
+	}
+	toreturn = evalRoboBasic(t.getChild(0));
+	toreturn += op+evalRoboBasic(t.getChild(1));
+	
+      }
+      return toreturn;
     }
     
     /**
