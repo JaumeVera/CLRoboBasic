@@ -1,51 +1,751 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//gnu.org///DTD XHTML 1.1 plus Target 1.0//EN" "../resources/xhtml11-target10.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><title>Interp</title><script src="../resources/gjdoc.js" type="text/javascript"><!-- this comment required for konqueror 3.2.2 --></script><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="generator" content="GNU Gjdoc Standard Doclet"/><meta name="keywords" content="interp.Interp class"/><meta name="keywords" content="Stack"/><meta name="keywords" content="FuncName2Tree"/><meta name="keywords" content="stdin"/><meta name="keywords" content="linenumber"/><meta name="keywords" content="trace"/><meta name="keywords" content="function_nesting"/><meta name="keywords" content="Run()"/><meta name="keywords" content="getStackTrace()"/><meta name="keywords" content="MapFunctions()"/><meta name="keywords" content="PreProcessAST()"/><meta name="keywords" content="lineNumber()"/><meta name="keywords" content="setLineNumber()"/><meta name="keywords" content="executeFunction()"/><meta name="keywords" content="executeListInstructions()"/><meta name="keywords" content="executeInstruction()"/><meta name="keywords" content="evaluateExpression()"/><meta name="keywords" content="evaluateBoolean()"/><meta name="keywords" content="checkBoolean()"/><meta name="keywords" content="checkInteger()"/><meta name="keywords" content="listArguments()"/><meta name="keywords" content="traceFunctionCall()"/><meta name="keywords" content="traceReturn()"/><link rel="stylesheet" type="text/css" href="../resources/gjdochtml-clean-layout.css" title="GNU Clean"/><link rel="stylesheet" type="text/css" href="../resources/gjdochtml-clean-color1.css" title="GNU Clean"/></head><body class="content class" onload="if(parent.contentPageLoaded)parent.contentPageLoaded(document.title)"><table class="navbar div top"><tr><td class="navbar div top"><div class="navbar div top"><span class="navbar item enabled"><a href="../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../alphaindex.html">Index</a></span> <span class="navbar item enabled"><a href="../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../about.html">About</a></span></div></td></tr><tr><td class="navi"><a href="../interp/Data.Type.html">Prev Class</a> | <a href="../interp/Stack.html">Next Class</a></td><td class="navi"><a href="../index.html" title="Show in a frameset" target="_top">Frames</a> | <a href="Interp.html" title="Show without frames" target="_top">No Frames</a> </td></tr><tr><td class="navi">Summary: Nested | <a href="#summary-fields">Field</a> | <a href="#summary-methods">Method</a> | <a href="#summary-constructors">Constr</a></td><td class="navi">Detail: Nested | <a href="#detail-fields">Field</a> | <a href="#detail-methods">Method</a> | <a href="#detail-constructors">Constr</a></td></tr></table><div class="class title outer"><h3 class="class title-package">interp</h3><h1 class="class title-class">Class Interp</h1></div><div class="class inheritance-tree"><ul class="inheritance 0"><li class="inheritance 0"><code>java.lang.Object</code></li><li><ul class="inheritance 1"><li class="inheritance 1"><code>interp.Interp</code></li><li></li></ul></li></ul></div><hr/><div class="class synopsis outer"><div class="class synopsis declaration"><code>public class <b class="class synopsis name">Interp</b></code></div><div class="class synopsis superclass"><code>extends java.lang.Object</code></div></div><hr/><div class="class description">Class that implements the interpreter of the language. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><a name="summary-fields" id="summary-fields"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Field Summary</h2></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  HashMap<String,AslTree></code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#FuncName2Tree">FuncName2Tree</a></code></dt><dd class="description"> Map between function names (keys) and ASTs (values).</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  Stack</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#Stack">Stack</a></code></dt><dd class="description">Memory of the virtual machine.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  int</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#function_nesting">function_nesting</a></code></dt><dd class="description">Nested levels of function calls.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  int</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#linenumber">linenumber</a></code></dt><dd class="description"> Stores the line number of the current statement.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  Scanner</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#stdin">stdin</a></code></dt><dd class="description">Standard input of the interpreter (System.in).</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  PrintWriter</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#trace">trace</a></code></dt><dd class="description">File to write the trace of function calls.</dd></dl></td></tr></table></dd></dl><a name="summary-constructors" id="summary-constructors"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Constructor Summary</h2></td></tr><tr><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#Interp(AslTree,String)">Interp</a>(AslTree&nbsp;T, String&nbsp;tracefile)</code></dt><dd class="description"> Constructor of the interpreter.</dd></dl></td></tr></table></dd></dl><a name="summary-methods" id="summary-methods"/><dl class="table container"><dd><table class="class summary" border="1" width="100%"><tr class="table header"><td colspan="2"><h2 class="table header">Method Summary</h2></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#MapFunctions(AslTree)">MapFunctions</a>(AslTree&nbsp;T)</code></dt><dd class="description"> Gathers information from the AST and creates the map from
- function names to the corresponding AST nodes.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#PreProcessAST(AslTree)">PreProcessAST</a>(AslTree&nbsp;T)</code></dt><dd class="description"> Performs some pre-processing on the AST.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#Run()">Run</a>()</code></dt><dd class="description">Runs the program by calling the main function without parameters.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#checkBoolean(Data)">checkBoolean</a>(Data&nbsp;b)</code></dt><dd class="description">Checks that the data is Boolean and raises an exception if it is not.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#checkInteger(Data)">checkInteger</a>(Data&nbsp;b)</code></dt><dd class="description">Checks that the data is integer and raises an exception if it is not.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  Data</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#evaluateBoolean(int,Data,AslTree)">evaluateBoolean</a>(int&nbsp;type, Data&nbsp;v, AslTree&nbsp;t)</code></dt><dd class="description"> Evaluation of Boolean expressions.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  Data</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#evaluateExpression(AslTree)">evaluateExpression</a>(AslTree&nbsp;t)</code></dt><dd class="description"> Evaluates the expression represented in the AST t.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  Data</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#executeFunction(String,AslTree)">executeFunction</a>(String&nbsp;funcname, AslTree&nbsp;args)</code></dt><dd class="description"> Executes a function.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  Data</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#executeInstruction(AslTree)">executeInstruction</a>(AslTree&nbsp;t)</code></dt><dd class="description"> Executes an instruction.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  Data</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#executeListInstructions(AslTree)">executeListInstructions</a>(AslTree&nbsp;t)</code></dt><dd class="description"> Executes a block of instructions.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> String</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getStackTrace()">getStackTrace</a>()</code></dt><dd class="description">Returns the contents of the stack trace </dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> String</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#getStackTrace(int)">getStackTrace</a>(int&nbsp;nitems)</code></dt><dd class="description">Returns a summarized contents of the stack trace </dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis"> int</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#lineNumber()">lineNumber</a>()</code></dt><dd class="description"> Gets the current line number.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  ArrayList<Data></code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#listArguments(AslTree,AslTree)">listArguments</a>(AslTree&nbsp;AstF, AslTree&nbsp;args)</code></dt><dd class="description"> Gathers the list of arguments of a function call.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setLineNumber(AslTree)">setLineNumber</a>(AslTree&nbsp;t)</code></dt><dd class="description">Defines the current line number associated to an AST node.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#setLineNumber(int)">setLineNumber</a>(int&nbsp;l)</code></dt><dd class="description">Defines the current line number with a specific value </dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#traceFunctionCall(AslTree,ArrayList<Data>)">traceFunctionCall</a>(AslTree&nbsp;f, ArrayList<Data>&nbsp;arg_values)</code></dt><dd class="description"> Writes trace information of a function call in the trace file.</dd></dl></td></tr><tr><td class="left" valign="top"><code class="synopsis">private  void</code></td><td class="right"><dl class="list"><dt class="synopsis"><code><a href="#traceReturn(AslTree,Data,ArrayList<Data>)">traceReturn</a>(AslTree&nbsp;f, Data&nbsp;result, ArrayList<Data>&nbsp;arg_values)</code></dt><dd class="description"> Writes the trace information about the return of a function.</dd></dl></td></tr></table></dd></dl><a name="detail-fields" id="detail-fields"/><h2 class="section header">Field Details</h2><div class="section"><a name="FuncName2Tree" id="FuncName2Tree"/><div class="member detail outer"><h3 class="member detail name">FuncName2Tree</h3><pre class="member detail synopsis">private HashMap<String,AslTree> FuncName2Tree</pre><blockquote class="member detail name"><div class="member detail description"> Map between function names (keys) and ASTs (values).
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="ca">
+<head>
+<!-- Generated by javadoc (version 1.6.0_30) on Sun Apr 20 18:56:00 CEST 2014 -->
+<title>Interp</title>
+<meta name="date" content="2014-04-20">
+<link rel="stylesheet" type="text/css" href="../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript"><!--
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Interp";
+    }
+//-->
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="topNav"><a name="navbar_top">
+<!--   -->
+</a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../deprecated-list.html">Deprecated</a></li>
+<li><a href="../index-all.html">Index</a></li>
+<li><a href="../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../interp/Data.Type.html" title="enum in interp"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../interp/Stack.html" title="class in interp"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../index.html?interp/Interp.html" target="_top">FRAMES</a></li>
+<li><a href="Interp.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_top");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#field_summary">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li><a href="#field_detail">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+<!--   -->
+</a></div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<p class="subTitle">interp</p>
+<h2 title="Class Interp" class="title">Class Interp</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li>java.lang.Object</li>
+<li>
+<ul class="inheritance">
+<li>interp.Interp</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>public class <strong>Interp</strong>
+extends java.lang.Object</pre>
+<div class="block">Class that implements the interpreter of the language.</div>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+<!-- =========== FIELD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field_summary">
+<!--   -->
+</a>
+<h3>Field Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
+<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Field and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private java.util.HashMap&lt;java.lang.String,<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&gt;</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#FuncName2Tree">FuncName2Tree</a></strong></code>
+<div class="block">Map between function names (keys) and ASTs (values).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private int</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#function_nesting">function_nesting</a></strong></code>
+<div class="block">Nested levels of function calls.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private int</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#linenumber">linenumber</a></strong></code>
+<div class="block">Stores the line number of the current statement.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private java.util.ArrayList&lt;java.lang.String&gt;</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#programa">programa</a></strong></code>
+<div class="block">String program in ArrayList form</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private <a href="../interp/Stack.html" title="class in interp">Stack</a></code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#Stack">Stack</a></strong></code>
+<div class="block">Memory of the virtual machine.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private java.util.Scanner</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#stdin">stdin</a></strong></code>
+<div class="block">Standard input of the interpreter (System.in).</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private java.io.PrintWriter</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#trace">trace</a></strong></code>
+<div class="block">File to write the trace of function calls.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+<!--   -->
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../interp/Interp.html#Interp(interp.AslTree, java.lang.String)">Interp</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;T,
+      java.lang.String&nbsp;tracefile)</code>
+<div class="block">Constructor of the interpreter.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+<!-- ========== METHOD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+<!--   -->
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#checkBoolean(interp.Data)">checkBoolean</a></strong>(<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;b)</code>
+<div class="block">Checks that the data is Boolean and raises an exception if it is not.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#checkInteger(interp.Data)">checkInteger</a></strong>(<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;b)</code>
+<div class="block">Checks that the data is integer and raises an exception if it is not.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#evalRoboBasic(interp.AslTree)">evalRoboBasic</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private <a href="../interp/Data.html" title="class in interp">Data</a></code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#evaluateBoolean(int, interp.Data, interp.AslTree)">evaluateBoolean</a></strong>(int&nbsp;type,
+               <a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;v,
+               <a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</code>
+<div class="block">Evaluation of Boolean expressions.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private <a href="../interp/Data.html" title="class in interp">Data</a></code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#evaluateExpression(interp.AslTree)">evaluateExpression</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</code>
+<div class="block">Evaluates the expression represented in the AST t.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private <a href="../interp/Data.html" title="class in interp">Data</a></code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#executeFunction(java.lang.String, interp.AslTree)">executeFunction</a></strong>(java.lang.String&nbsp;funcname,
+               <a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;args)</code>
+<div class="block">Executes a function.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private <a href="../interp/Data.html" title="class in interp">Data</a></code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#executeInstruction(interp.AslTree)">executeInstruction</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</code>
+<div class="block">Executes an instruction.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private <a href="../interp/Data.html" title="class in interp">Data</a></code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#executeListInstructions(interp.AslTree)">executeListInstructions</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</code>
+<div class="block">Executes a block of instructions.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#getStackTrace()">getStackTrace</a></strong>()</code>
+<div class="block">Returns the contents of the stack trace</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#getStackTrace(int)">getStackTrace</a></strong>(int&nbsp;nitems)</code>
+<div class="block">Returns a summarized contents of the stack trace</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>java.util.ArrayList</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#getVector()">getVector</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#lineNumber()">lineNumber</a></strong>()</code>
+<div class="block">Gets the current line number.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private java.util.ArrayList&lt;<a href="../interp/Data.html" title="class in interp">Data</a>&gt;</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#listArguments(interp.AslTree, interp.AslTree)">listArguments</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;AstF,
+             <a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;args)</code>
+<div class="block">Gathers the list of arguments of a function call.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#MapFunctions(interp.AslTree)">MapFunctions</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;T)</code>
+<div class="block">Gathers information from the AST and creates the map from
+ function names to the corresponding AST nodes.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#PreProcessAST(interp.AslTree)">PreProcessAST</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;T)</code>
+<div class="block">Performs some pre-processing on the AST.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#Run()">Run</a></strong>()</code>
+<div class="block">Runs the program by calling the main function without parameters.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#setLineNumber(interp.AslTree)">setLineNumber</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</code>
+<div class="block">Defines the current line number associated to an AST node.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#setLineNumber(int)">setLineNumber</a></strong>(int&nbsp;l)</code>
+<div class="block">Defines the current line number with a specific value</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#traceFunctionCall(interp.AslTree, java.util.ArrayList)">traceFunctionCall</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;f,
+                 java.util.ArrayList&lt;<a href="../interp/Data.html" title="class in interp">Data</a>&gt;&nbsp;arg_values)</code>
+<div class="block">Writes trace information of a function call in the trace file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private void</code></td>
+<td class="colLast"><code><strong><a href="../interp/Interp.html#traceReturn(interp.AslTree, interp.Data, java.util.ArrayList)">traceReturn</a></strong>(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;f,
+           <a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;result,
+           java.util.ArrayList&lt;<a href="../interp/Data.html" title="class in interp">Data</a>&gt;&nbsp;arg_values)</code>
+<div class="block">Writes the trace information about the return of a function.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.Object</h3>
+<code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+<!-- ============ FIELD DETAIL =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="field_detail">
+<!--   -->
+</a>
+<h3>Field Detail</h3>
+<a name="Stack">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>Stack</h4>
+<pre>private&nbsp;<a href="../interp/Stack.html" title="class in interp">Stack</a> Stack</pre>
+<div class="block">Memory of the virtual machine.</div>
+</li>
+</ul>
+<a name="FuncName2Tree">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>FuncName2Tree</h4>
+<pre>private&nbsp;java.util.HashMap&lt;java.lang.String,<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&gt; FuncName2Tree</pre>
+<div class="block">Map between function names (keys) and ASTs (values).
  Each entry of the map stores the root of the AST
- correponding to the function.
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="Stack" id="Stack"/><div class="member detail outer"><h3 class="member detail name">Stack</h3><pre class="member detail synopsis">private Stack Stack</pre><blockquote class="member detail name"><div class="member detail description">Memory of the virtual machine. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="function_nesting" id="function_nesting"/><div class="member detail outer"><h3 class="member detail name">function_nesting</h3><pre class="member detail synopsis">private int function_nesting</pre><blockquote class="member detail name"><div class="member detail description">Nested levels of function calls. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="linenumber" id="linenumber"/><div class="member detail outer"><h3 class="member detail name">linenumber</h3><pre class="member detail synopsis">private int linenumber</pre><blockquote class="member detail name"><div class="member detail description"> Stores the line number of the current statement.
- The line number is used to report runtime errors.
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="stdin" id="stdin"/><div class="member detail outer"><h3 class="member detail name">stdin</h3><pre class="member detail synopsis">private Scanner stdin</pre><blockquote class="member detail name"><div class="member detail description">Standard input of the interpreter (System.in). </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="trace" id="trace"/><div class="member detail outer"><h3 class="member detail name">trace</h3><pre class="member detail synopsis">private PrintWriter trace</pre><blockquote class="member detail name"><div class="member detail description">File to write the trace of function calls. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><a name="detail-constructors" id="detail-constructors"/><h2 class="section header">Constructor Details</h2><div class="section"><a name="Interp(AslTree,String)" id="Interp(AslTree,String)"/><div class="member detail outer"><h3 class="member detail name">Interp</h3><pre class="member detail synopsis">public Interp(AslTree T,
-              String tracefile)</pre><blockquote class="member detail name"><div class="member detail description"> Constructor of the interpreter. It prepares the main
- data structures for the execution of the main program.
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><a name="detail-methods" id="detail-methods"/><h2 class="section header">Method Details</h2><div class="section"><a name="MapFunctions(AslTree)" id="MapFunctions(AslTree)"/><div class="member detail outer"><h3 class="member detail name">MapFunctions</h3><pre class="member detail synopsis">private void MapFunctions(AslTree T)</pre><blockquote class="member detail name"><div class="member detail description"> Gathers information from the AST and creates the map from
- function names to the corresponding AST nodes.
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="PreProcessAST(AslTree)" id="PreProcessAST(AslTree)"/><div class="member detail outer"><h3 class="member detail name">PreProcessAST</h3><pre class="member detail synopsis">private void PreProcessAST(AslTree T)</pre><blockquote class="member detail name"><div class="member detail description"> Performs some pre-processing on the AST. Basically, it
+ correponding to the function.</div>
+</li>
+</ul>
+<a name="stdin">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>stdin</h4>
+<pre>private&nbsp;java.util.Scanner stdin</pre>
+<div class="block">Standard input of the interpreter (System.in).</div>
+</li>
+</ul>
+<a name="linenumber">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>linenumber</h4>
+<pre>private&nbsp;int linenumber</pre>
+<div class="block">Stores the line number of the current statement.
+ The line number is used to report runtime errors.</div>
+</li>
+</ul>
+<a name="trace">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>trace</h4>
+<pre>private&nbsp;java.io.PrintWriter trace</pre>
+<div class="block">File to write the trace of function calls.</div>
+</li>
+</ul>
+<a name="function_nesting">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>function_nesting</h4>
+<pre>private&nbsp;int function_nesting</pre>
+<div class="block">Nested levels of function calls.</div>
+</li>
+</ul>
+<a name="programa">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>programa</h4>
+<pre>private&nbsp;java.util.ArrayList&lt;java.lang.String&gt; programa</pre>
+<div class="block">String program in ArrayList form</div>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+<!--   -->
+</a>
+<h3>Constructor Detail</h3>
+<a name="Interp(interp.AslTree, java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>Interp</h4>
+<pre>public&nbsp;Interp(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;T,
+      java.lang.String&nbsp;tracefile)</pre>
+<div class="block">Constructor of the interpreter. It prepares the main
+ data structures for the execution of the main program.</div>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ============ METHOD DETAIL ========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="getVector()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getVector</h4>
+<pre>public&nbsp;java.util.ArrayList&nbsp;getVector()</pre>
+</li>
+</ul>
+<a name="Run()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>Run</h4>
+<pre>public&nbsp;void&nbsp;Run()</pre>
+<div class="block">Runs the program by calling the main function without parameters.</div>
+</li>
+</ul>
+<a name="getStackTrace()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getStackTrace</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getStackTrace()</pre>
+<div class="block">Returns the contents of the stack trace</div>
+</li>
+</ul>
+<a name="getStackTrace(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getStackTrace</h4>
+<pre>public&nbsp;java.lang.String&nbsp;getStackTrace(int&nbsp;nitems)</pre>
+<div class="block">Returns a summarized contents of the stack trace</div>
+</li>
+</ul>
+<a name="MapFunctions(interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>MapFunctions</h4>
+<pre>private&nbsp;void&nbsp;MapFunctions(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;T)</pre>
+<div class="block">Gathers information from the AST and creates the map from
+ function names to the corresponding AST nodes.</div>
+</li>
+</ul>
+<a name="PreProcessAST(interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>PreProcessAST</h4>
+<pre>private&nbsp;void&nbsp;PreProcessAST(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;T)</pre>
+<div class="block">Performs some pre-processing on the AST. Basically, it
  calculates the value of the literals and stores a simpler
- representation. See AslTree.java for details.
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="Run()" id="Run()"/><div class="member detail outer"><h3 class="member detail name">Run</h3><pre class="member detail synopsis">public void Run()</pre><blockquote class="member detail name"><div class="member detail description">Runs the program by calling the main function without parameters. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="checkBoolean(Data)" id="checkBoolean(Data)"/><div class="member detail outer"><h3 class="member detail name">checkBoolean</h3><pre class="member detail synopsis">private void checkBoolean(Data b)</pre><blockquote class="member detail name"><div class="member detail description">Checks that the data is Boolean and raises an exception if it is not. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="checkInteger(Data)" id="checkInteger(Data)"/><div class="member detail outer"><h3 class="member detail name">checkInteger</h3><pre class="member detail synopsis">private void checkInteger(Data b)</pre><blockquote class="member detail name"><div class="member detail description">Checks that the data is integer and raises an exception if it is not. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="evaluateBoolean(int,Data,AslTree)" id="evaluateBoolean(int,Data,AslTree)"/><div class="member detail outer"><h3 class="member detail name">evaluateBoolean</h3><pre class="member detail synopsis">private Data evaluateBoolean(int type,
-                             Data v,
-                             AslTree t)</pre><blockquote class="member detail name"><div class="member detail description"> Evaluation of Boolean expressions. This function implements
+ representation. See AslTree.java for details.</div>
+</li>
+</ul>
+<a name="lineNumber()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>lineNumber</h4>
+<pre>public&nbsp;int&nbsp;lineNumber()</pre>
+<div class="block">Gets the current line number. In case of a runtime error,
+ it returns the line number of the statement causing the
+ error.</div>
+</li>
+</ul>
+<a name="setLineNumber(interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setLineNumber</h4>
+<pre>private&nbsp;void&nbsp;setLineNumber(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</pre>
+<div class="block">Defines the current line number associated to an AST node.</div>
+</li>
+</ul>
+<a name="setLineNumber(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setLineNumber</h4>
+<pre>private&nbsp;void&nbsp;setLineNumber(int&nbsp;l)</pre>
+<div class="block">Defines the current line number with a specific value</div>
+</li>
+</ul>
+<a name="executeFunction(java.lang.String, interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>executeFunction</h4>
+<pre>private&nbsp;<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;executeFunction(java.lang.String&nbsp;funcname,
+                   <a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;args)</pre>
+<div class="block">Executes a function.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>funcname</code> - The name of the function.</dd><dd><code>args</code> - The AST node representing the list of arguments of the caller.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>The data returned by the function.</dd></dl>
+</li>
+</ul>
+<a name="executeListInstructions(interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>executeListInstructions</h4>
+<pre>private&nbsp;<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;executeListInstructions(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</pre>
+<div class="block">Executes a block of instructions. The block is terminated
+ as soon as an instruction returns a non-null result.
+ Non-null results are only returned by "return" statements.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>t</code> - The AST of the block of instructions.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>The data returned by the instructions (null if no return
+ statement has been executed).</dd></dl>
+</li>
+</ul>
+<a name="executeInstruction(interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>executeInstruction</h4>
+<pre>private&nbsp;<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;executeInstruction(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</pre>
+<div class="block">Executes an instruction. 
+ Non-null results are only returned by "return" statements.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>t</code> - The AST of the instruction.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>The data returned by the instruction. The data will be
+ non-null only if a return statement is executed or a block
+ of instructions executing a return.</dd></dl>
+</li>
+</ul>
+<a name="evalRoboBasic(interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>evalRoboBasic</h4>
+<pre>private&nbsp;java.lang.String&nbsp;evalRoboBasic(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</pre>
+</li>
+</ul>
+<a name="evaluateExpression(interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>evaluateExpression</h4>
+<pre>private&nbsp;<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;evaluateExpression(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</pre>
+<div class="block">Evaluates the expression represented in the AST t.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>t</code> - The AST of the expression</dd>
+<dt><span class="strong">Returns:</span></dt><dd>The value of the expression.</dd></dl>
+</li>
+</ul>
+<a name="evaluateBoolean(int, interp.Data, interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>evaluateBoolean</h4>
+<pre>private&nbsp;<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;evaluateBoolean(int&nbsp;type,
+                   <a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;v,
+                   <a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;t)</pre>
+<div class="block">Evaluation of Boolean expressions. This function implements
  a short-circuit evaluation. The second operand is still a tree
  and is only evaluated if the value of the expression cannot be
- determined by the first operand.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">type</code><span class="separator"> - </span><span class="description">Type of operator (token).</span></dd><dd class="item"><code class="name">v</code><span class="separator"> - </span><span class="description">First operand.</span></dd><dd class="item"><code class="name">t</code><span class="separator"> - </span><span class="description">AST node of the second operand.</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">An Boolean data with the value of the expression.</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="evaluateExpression(AslTree)" id="evaluateExpression(AslTree)"/><div class="member detail outer"><h3 class="member detail name">evaluateExpression</h3><pre class="member detail synopsis">private Data evaluateExpression(AslTree t)</pre><blockquote class="member detail name"><div class="member detail description"> Evaluates the expression represented in the AST t.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">t</code><span class="separator"> - </span><span class="description">The AST of the expression</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">The value of the expression.</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="executeFunction(String,AslTree)" id="executeFunction(String,AslTree)"/><div class="member detail outer"><h3 class="member detail name">executeFunction</h3><pre class="member detail synopsis">private Data executeFunction(String funcname,
-                             AslTree args)</pre><blockquote class="member detail name"><div class="member detail description"> Executes a function.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">funcname</code><span class="separator"> - </span><span class="description">The name of the function.</span></dd><dd class="item"><code class="name">args</code><span class="separator"> - </span><span class="description">The AST node representing the list of arguments of the caller.</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">The data returned by the function.</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="executeInstruction(AslTree)" id="executeInstruction(AslTree)"/><div class="member detail outer"><h3 class="member detail name">executeInstruction</h3><pre class="member detail synopsis">private Data executeInstruction(AslTree t)</pre><blockquote class="member detail name"><div class="member detail description"> Executes an instruction. 
- Non-null results are only returned by "return" statements.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">t</code><span class="separator"> - </span><span class="description">The AST of the instruction.</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">The data returned by the instruction. The data will be
-non-null only if a return statement is executed or a block
-of instructions executing a return.</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="executeListInstructions(AslTree)" id="executeListInstructions(AslTree)"/><div class="member detail outer"><h3 class="member detail name">executeListInstructions</h3><pre class="member detail synopsis">private Data executeListInstructions(AslTree t)</pre><blockquote class="member detail name"><div class="member detail description"> Executes a block of instructions. The block is terminated
- as soon as an instruction returns a non-null result.
- Non-null results are only returned by "return" statements.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">t</code><span class="separator"> - </span><span class="description">The AST of the block of instructions.</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">The data returned by the instructions (null if no return
-statement has been executed).</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getStackTrace()" id="getStackTrace()"/><div class="member detail outer"><h3 class="member detail name">getStackTrace</h3><pre class="member detail synopsis">public String getStackTrace()</pre><blockquote class="member detail name"><div class="member detail description">Returns the contents of the stack trace </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="getStackTrace(int)" id="getStackTrace(int)"/><div class="member detail outer"><h3 class="member detail name">getStackTrace</h3><pre class="member detail synopsis">public String getStackTrace(int nitems)</pre><blockquote class="member detail name"><div class="member detail description">Returns a summarized contents of the stack trace </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="lineNumber()" id="lineNumber()"/><div class="member detail outer"><h3 class="member detail name">lineNumber</h3><pre class="member detail synopsis">public int lineNumber()</pre><blockquote class="member detail name"><div class="member detail description"> Gets the current line number. In case of a runtime error,
- it returns the line number of the statement causing the
- error.
-</div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="listArguments(AslTree,AslTree)" id="listArguments(AslTree,AslTree)"/><div class="member detail outer"><h3 class="member detail name">listArguments</h3><pre class="member detail synopsis">private ArrayList<Data> listArguments(AslTree AstF,
-                                      AslTree args)</pre><blockquote class="member detail name"><div class="member detail description"> Gathers the list of arguments of a function call. It also checks
+ determined by the first operand.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>type</code> - Type of operator (token).</dd><dd><code>v</code> - First operand.</dd><dd><code>t</code> - AST node of the second operand.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>An Boolean data with the value of the expression.</dd></dl>
+</li>
+</ul>
+<a name="checkBoolean(interp.Data)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>checkBoolean</h4>
+<pre>private&nbsp;void&nbsp;checkBoolean(<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;b)</pre>
+<div class="block">Checks that the data is Boolean and raises an exception if it is not.</div>
+</li>
+</ul>
+<a name="checkInteger(interp.Data)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>checkInteger</h4>
+<pre>private&nbsp;void&nbsp;checkInteger(<a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;b)</pre>
+<div class="block">Checks that the data is integer and raises an exception if it is not.</div>
+</li>
+</ul>
+<a name="listArguments(interp.AslTree, interp.AslTree)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>listArguments</h4>
+<pre>private&nbsp;java.util.ArrayList&lt;<a href="../interp/Data.html" title="class in interp">Data</a>&gt;&nbsp;listArguments(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;AstF,
+                                      <a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;args)</pre>
+<div class="block">Gathers the list of arguments of a function call. It also checks
  that the arguments are compatible with the parameters. In particular,
  it checks that the number of parameters is the same and that no
- expressions are passed as parametres by reference.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">AstF</code><span class="separator"> - </span><span class="description">The AST of the callee.</span></dd><dd class="item"><code class="name">args</code><span class="separator"> - </span><span class="description">The AST of the list of arguments passed by the caller.</span></dd></dl></div><div class="member detail return list"><dl><dt class="member detail return header"><b>Returns:</b></dt><dd class="member detail return item">The list of evaluated arguments.</dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setLineNumber(AslTree)" id="setLineNumber(AslTree)"/><div class="member detail outer"><h3 class="member detail name">setLineNumber</h3><pre class="member detail synopsis">private void setLineNumber(AslTree t)</pre><blockquote class="member detail name"><div class="member detail description">Defines the current line number associated to an AST node. </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="setLineNumber(int)" id="setLineNumber(int)"/><div class="member detail outer"><h3 class="member detail name">setLineNumber</h3><pre class="member detail synopsis">private void setLineNumber(int l)</pre><blockquote class="member detail name"><div class="member detail description">Defines the current line number with a specific value </div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="traceFunctionCall(AslTree,ArrayList<Data>)" id="traceFunctionCall(AslTree,ArrayList<Data>)"/><div class="member detail outer"><h3 class="member detail name">traceFunctionCall</h3><pre class="member detail synopsis">private void traceFunctionCall(AslTree f,
-                               ArrayList<Data> arg_values)</pre><blockquote class="member detail name"><div class="member detail description"> Writes trace information of a function call in the trace file.
+ expressions are passed as parametres by reference.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>AstF</code> - The AST of the callee.</dd><dd><code>args</code> - The AST of the list of arguments passed by the caller.</dd>
+<dt><span class="strong">Returns:</span></dt><dd>The list of evaluated arguments.</dd></dl>
+</li>
+</ul>
+<a name="traceFunctionCall(interp.AslTree, java.util.ArrayList)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>traceFunctionCall</h4>
+<pre>private&nbsp;void&nbsp;traceFunctionCall(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;f,
+                     java.util.ArrayList&lt;<a href="../interp/Data.html" title="class in interp">Data</a>&gt;&nbsp;arg_values)</pre>
+<div class="block">Writes trace information of a function call in the trace file.
  The information is the name of the function, the value of the
- parameters and the line number where the function call is produced.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">f</code><span class="separator"> - </span><span class="description">AST of the function</span></dd><dd class="item"><code class="name">arg_values</code><span class="separator"> - </span><span class="description">Values of the parameters passed to the function</span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div><hr/><a name="traceReturn(AslTree,Data,ArrayList<Data>)" id="traceReturn(AslTree,Data,ArrayList<Data>)"/><div class="member detail outer"><h3 class="member detail name">traceReturn</h3><pre class="member detail synopsis">private void traceReturn(AslTree f,
-                         Data result,
-                         ArrayList<Data> arg_values)</pre><blockquote class="member detail name"><div class="member detail description"> Writes the trace information about the return of a function.
+ parameters and the line number where the function call is produced.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>f</code> - AST of the function</dd><dd><code>arg_values</code> - Values of the parameters passed to the function</dd></dl>
+</li>
+</ul>
+<a name="traceReturn(interp.AslTree, interp.Data, java.util.ArrayList)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>traceReturn</h4>
+<pre>private&nbsp;void&nbsp;traceReturn(<a href="../interp/AslTree.html" title="class in interp">AslTree</a>&nbsp;f,
+               <a href="../interp/Data.html" title="class in interp">Data</a>&nbsp;result,
+               java.util.ArrayList&lt;<a href="../interp/Data.html" title="class in interp">Data</a>&gt;&nbsp;arg_values)</pre>
+<div class="block">Writes the trace information about the return of a function.
  The information is the value of the returned value and of the
  variables passed by reference. It also reports the line number
- of the return.
-</div><div class="parameter"><dl><dt class="header"><b>Parameters:</b></dt><dd class="item"><code class="name">f</code><span class="separator"> - </span><span class="description">AST of the function</span></dd><dd class="item"><code class="name">result</code><span class="separator"> - </span><span class="description">The value of the result</span></dd><dd class="item"><code class="name">arg_values</code><span class="separator"> - </span><span class="description">The value of the parameters passed to the function</span></dd></dl></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div><div class="taglet"></div></blockquote></div></div><p class="navbar bottom spacer"> </p><table class="navbar div bottom"><tr><td><div class="navbar div top"><span class="navbar item enabled"><a href="../overview-summary.html">Overview</a></span> <span class="navbar item enabled"><a href="package-summary.html">Package</a></span> <span class="navbar item enabled"><a href="tree.html">Tree</a></span> <span class="navbar item enabled"><a href="../alphaindex.html">Index</a></span> <span class="navbar item enabled"><a href="../deprecated.html">Deprecated</a></span> <span class="navbar item enabled"><a href="../about.html">About</a></span></div></td></tr></table></body></html>
+ of the return.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>f</code> - AST of the function</dd><dd><code>result</code> - The value of the result</dd><dd><code>arg_values</code> - The value of the parameters passed to the function</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<!-- ========= END OF CLASS DATA ========= -->
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<div class="bottomNav"><a name="navbar_bottom">
+<!--   -->
+</a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../deprecated-list.html">Deprecated</a></li>
+<li><a href="../index-all.html">Index</a></li>
+<li><a href="../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../interp/Data.Type.html" title="enum in interp"><span class="strong">PREV CLASS</span></a></li>
+<li><a href="../interp/Stack.html" title="class in interp"><span class="strong">NEXT CLASS</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../index.html?interp/Interp.html" target="_top">FRAMES</a></li>
+<li><a href="Interp.html" target="_top">NO FRAMES</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_bottom");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>SUMMARY:&nbsp;</li>
+<li>NESTED&nbsp;|&nbsp;</li>
+<li><a href="#field_summary">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">METHOD</a></li>
+</ul>
+<ul class="subNavList">
+<li>DETAIL:&nbsp;</li>
+<li><a href="#field_detail">FIELD</a>&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">METHOD</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+<!--   -->
+</a></div>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+</body>
+</html>

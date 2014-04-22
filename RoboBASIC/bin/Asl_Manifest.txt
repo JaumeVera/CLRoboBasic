@@ -1,2 +1,2 @@
 Main-Class: Asl.Asl
-Class-Path: /home2/users/alumnes/1136162/dades/linux/Q10/CL/RoboBASIC/libs/antlr-3.4-complete.jar /home2/users/alumnes/1136162/dades/linux/Q10/CL/RoboBASIC/libs/commons-cli-1.2.jar
+Class-Path: /media/Dades/Jaume/UNI/GRAU/Q10/CL/RoboBasic/RoboBASIC/libs/antlr-3.4-complete.jar /media/Dades/Jaume/UNI/GRAU/Q10/CL/RoboBasic/RoboBASIC/libs/commons-cli-1.2.jar
