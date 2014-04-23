@@ -508,6 +508,10 @@ public class Interp {
         return null;
     }
 
+	/**
+		* ASDFJASPFASGFAJGJPOS
+	*/
+	
     /**
      * Esta función se asegura que no haya ningún caracter o expresión que
      * RoboBASIC no pueda asimilar y transforma la expresión y sus hijos
