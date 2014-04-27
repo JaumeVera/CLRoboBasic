@@ -41,7 +41,7 @@ import parser.*;
 
 public class Data {
     /** Types of data */
-    public enum Type {VOID, BOOLEAN, INTEGER, ARRAYI, ARRAYB;}
+    public enum Type {VOID, BOOLEAN, INTEGER, STRING, ARRAYI, ARRAYB, ARRAYS;}
 
     /** Type of data*/
     private Type type;
@@ -51,6 +51,9 @@ public class Data {
 
     /** Content of the array */
     private int[] content;
+
+    /** String equivalent */
+    private String written;
     
     /** Constructor for integers */
     Data(int v) {type = Type.INTEGER; value = v; }
@@ -99,6 +102,9 @@ public class Data {
 
     /** Indicates whether the data is Array of integer */
     public boolean isArrayInteger() { return type == Type.ARRAYI; }
+
+    /** Indicates whether the data is String */
+    public boolean isString() { return type == Type.STRING; }
     
     /** Indicates whether the data is Boolean */
     public boolean isBoolean() { return type == Type.BOOLEAN; }
@@ -155,8 +161,7 @@ public class Data {
 
     /** Defines an array of booleans value for the data */
     public void setValue(int pos, boolean b) {
-      type = Type.ARRAYB;
-      if (pos > value){
+      if (type == Type.ARRAYB && (pos > value)){
 	int[] contentaux = new int[pos+1];
 	for (int i = 0; i < value; i++) contentaux[i] = content[i];
 	content = new int[pos+1];
@@ -164,13 +169,17 @@ public class Data {
 	for (int i = value+1; i < pos; i++) content[i] = 0;
 	content[pos] = b ? 1 : 0;
       }
-      else content[pos] = b ? 1 : 0;
+      else{
+	content = new int[pos+1];
+	for (int i = 0; i < pos; i++) pos = 0;
+	content[pos] = b ? 1 : 0;
+      }
+      type = Type.ARRAYB;
     }
 
     /** Defines an integer value for the data */
     public void setValue(int pos, int v) {
-      type = Type.ARRAYI;
-      if (pos > value){
+      if (type == Type.ARRAYI && (pos > value)){
 	int[] contentaux = new int[pos+1];
 	for (int i = 0; i < value; i++) contentaux[i] = content[i];
 	content = new int[pos+1];
@@ -178,7 +187,12 @@ public class Data {
 	for (int i = value+1; i < pos; i++) content[i] = 0;
 	content[pos] = v;
       }
-      else content[pos] = v;
+      else{
+	content = new int[pos+1];
+	for (int i = 0; i < pos; i++) pos = 0;
+	content[pos] = v;
+      }
+      type = Type.ARRAYI;
     }
     
     /** Copies the value from another data */
@@ -192,10 +206,26 @@ public class Data {
       else content = new int[1];
     }
     
+    /** Define string */
+    public void defineString(String str){
+      written = str;
+    }
+    
+    /** Add string */
+    public void addString(String str){
+      written += str;
+    }
+    
     /** Returns a string representing the data in textual form. */
     public String toString() {
         if (type == Type.BOOLEAN) return value == 1 ? "true" : "false";
         return Integer.toString(value);
+    }
+    
+    /** Returns the equivalent string */
+    
+    public String getEquivalent(){
+      return written;
     }
     
     /**

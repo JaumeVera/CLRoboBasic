@@ -89,35 +89,11 @@ public class Stack {
      * the variable are re-defined.
      * @param name The name of the variable
      * @param value The value of the variable
-     * @param num The position of the array (if there is)
      */
-    public void defineVariable(String name, Data value, int num) {
+    public void defineVariable(String name, Data value) {
         Data d = CurrentAR.get(name);
-        if (d == null){
-	  if(num >= 0){
-	    if(value.getType() == Data.Type.BOOLEAN) value = new Data(value.getBooleanValue(), num);
-	    else value = new Data(value.getIntegerValue(), num);
-	  }
-	  CurrentAR.put(name, value); // New definition
-	}
-        else{
-	  if(num >= 0){
-	    if(d.getType() == Data.Type.BOOLEAN || d.getType() == Data.Type.INTEGER){
-	      if(value.getType() == Data.Type.BOOLEAN) value = new Data(value.getBooleanValue(), num);
-	      else value.setValue(num, value.getIntegerValue());
-	    }
-	    else{
-	      if(d.getType() == Data.Type.ARRAYI && value.getType() == Data.Type.BOOLEAN) value = new Data(value.getBooleanValue(), num);
-	      else if (d.getType() == Data.Type.ARRAYB && value.getType() == Data.Type.INTEGER) value = new Data(value.getIntegerValue(), num);
-	      else{
-		if (value.getType() == Data.Type.BOOLEAN) d.setValue(num, value.getBooleanValue());
-		else d.setValue(num, value.getIntegerValue());
-		value = new Data(d);
-	      }
-	    }
-	  }
-	  d.setData(value); // Use the previous data
-	}
+        if (d == null) CurrentAR.put(name, value); // New definition
+        else d.setData(value); // Use the previous data 
     }
 
     /** Gets the value of the variable. The value is represented as

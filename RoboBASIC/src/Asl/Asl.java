@@ -28,7 +28,6 @@
 package Asl;
 
 // Imports for ANTLR
-import java.util.ArrayList;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
@@ -36,6 +35,7 @@ import org.antlr.stringtemplate.*;
 // Imports from Java
 import org.apache.commons.cli.*; // Command Language Interface
 import java.io.*;
+import java.util.ArrayList;
 
 // Parser and Interpreter
 import parser.*;
@@ -113,21 +113,20 @@ public class Asl{
             }
             output.close();
         }
-        
-        // Convert program to RoboBASIC string
+
+        // Start interpretation (only if execution required)
         if (execute) {
+            // Creates and prepares the interpreter
             Interp I = null;
             int linenumber = -1;
             try {
                 I = new Interp(t, tracefile); // prepares the interpreter
-		// Print string to an external file
+                I.Run();                  // Executes the code
 		ArrayList<String> a = I.getVector();
 		for (int i = 0; i < a.size(); i++){
 		  System.out.println(a.get(i));
 		}
-		// Strings
-            }
-	    catch (RuntimeException e) {
+            } catch (RuntimeException e) {
                 if (I != null) linenumber = I.lineNumber();
                 System.err.print ("Runtime error");
                 if (linenumber < 0) System.err.print (": ");
@@ -221,4 +220,3 @@ public class Asl{
         return true;
     }
 }
-

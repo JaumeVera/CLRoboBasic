@@ -72,9 +72,9 @@ public class Interp {
      */
     public Interp(AslTree T, String tracefile) {
         assert T != null;
-        programa = new ArrayList<String>();
         MapFunctions(T);  // Creates the table to map function names into AST nodes
         PreProcessAST(T); // Some internal pre-processing ot the AST
+        Stack = new Stack(); // Creates the memory of the virtual machine
         // Initializes the standard input of the program
         stdin = new Scanner (new BufferedReader(new InputStreamReader(System.in)));
         if (tracefile != null) {
@@ -86,16 +86,18 @@ public class Interp {
             }
         }
         function_nesting = -1;
+        programa = new ArrayList<String>();
     }
 
     public ArrayList getVector(){
-      evaluateFunction ("main", null);
       return programa;
     }
     
     /** Runs the program by calling the main function without parameters. */
     public void Run() {
-        executeFunction ("main", null);
+      programa.add("MainProgram:");
+      executeFunction ("main", null);
+      programa.add("End");
     }
 
     /** Returns the contents of the stack trace */
@@ -189,7 +191,7 @@ public class Interp {
         // Copy the parameters to the current activation record
         for (int i = 0; i < nparam; ++i) {
             String param_name = p.getChild(i).getText();
-            Stack.defineVariable(param_name, Arg_values.get(i), -1);
+            Stack.defineVariable(param_name, Arg_values.get(i));
         }
 
         // Execute the instructions
@@ -205,209 +207,6 @@ public class Interp {
         Stack.popActivationRecord();
 
         return result;
-    }
-
-/**
-     * Evaluates a function.
-     * @param funcname The name of the function.
-     * @param args The AST node representing the list of arguments of the caller.
-     * @return The data returned by the function.
-     */
-    private void evaluateFunction (String funcname, AslTree args) {
-        // Get the AST of the function
-        AslTree f = FuncName2Tree.get(funcname);
-        if (f == null) throw new RuntimeException(" function " + funcname + " not declared");
-
-        // Gather the list of arguments of the caller. This function
-        // performs all the checks required for the compatibility of
-        // parameters.
-        ArrayList<Data> Arg_values = listArguments(f, args);
-        // Dumps trace information (function call and arguments)
-        if (trace != null) traceFunctionCall(f, Arg_values);
-        
-        // List of parameters of the callee
-        AslTree p = f.getChild(1);
-        int nparam = p.getChildCount(); // Number of parameters
-        
-        // Track line number
-        setLineNumber(f);
-         
-        // Copy the parameters to the current activation record
-        for (int i = 0; i < nparam; ++i) {
-            String param_name = p.getChild(i).getText();
-            Stack.defineVariable(param_name, Arg_values.get(i), -1);
-        }
-
-        // Execute the instructions
-        writeListInstructions (f.getChild(2));
-
-    }
-    
-    /**
-     * Writes a block of instructions. The block is terminated
-     * as soon as an instruction returns a non-null result.
-     * Non-null results are only returned by "return" statements.
-     * @param t The AST of the block of instructions.
-     * @return The data returned by the instructions (null if no return
-     * statement has been executed).
-     */
-    private void writeListInstructions (AslTree t) {
-        assert t != null;
-        Data result = null;
-        int ninstr = t.getChildCount();
-        for (int i = 0; i < ninstr; ++i) {
-            writeInstruction (t.getChild(i));
-        }
-    }
-    
-    /**
-     * Executes a block of instructions. The block is terminated
-     * as soon as an instruction returns a non-null result.
-     * Non-null results are only returned by "return" statements.
-     * @param t The AST of the block of instructions.
-     * @return The data returned by the instructions (null if no return
-     * statement has been executed).
-     */
-    private Data executeListInstructions (AslTree t) {
-        assert t != null;
-        Data result = null;
-        int ninstr = t.getChildCount();
-        for (int i = 0; i < ninstr; ++i) {
-            result = executeInstruction (t.getChild(i));
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    /**
-     * Writes an instruction. 
-     * Non-null results are only returned by "return" statements.
-     * @param t The AST of the instruction.
-     * @return The data returned by the instruction. The data will be
-     * non-null only if a return statement is executed or a block
-     * of instructions executing a return.
-     */
-    private void writeInstruction (AslTree t) {
-        assert t != null;
-        
-        setLineNumber(t);
-        Data value; // The returned value
-
-        // A big switch for all type of instructions
-        switch (t.getType()) {
-
-            // Assignment
-            case AslLexer.ASSIGN:
-                value = evaluateExpression(t.getChild(1));
-                //Here goes the ARRAY
-                AslTree tson = t.getChild(0);
-                if(tson.getType() == AslLexer.LBRACK){
-		  Stack.defineVariable(tson.getChild(0).getText(), value, tson.getChild(1).getIntValue());
-                }
-                else Stack.defineVariable (t.getChild(0).getText(), value, -1);
-                break;
-
-            // If-then-else
-            case AslLexer.IF:
-                value = evaluateExpression(t.getChild(0));
-                checkBoolean(value);
-                if (value.getBooleanValue()) writeListInstructions(t.getChild(1));
-                // Is there else statement ?
-                if (t.getChildCount() == 3) writeListInstructions(t.getChild(2));
-                break;
-
-            // While
-            case AslLexer.WHILE:
-                while (true) {
-                    value = evaluateExpression(t.getChild(0));
-                    checkBoolean(value);
-                    if (!value.getBooleanValue()) break;
-                    Data r = executeListInstructions(t.getChild(1));
-                    if (r != null) break;
-                }
-
-            // Return
-            case AslLexer.RETURN:
-                if (t.getChildCount() != 0) {
-                }
-		break;
-            // Read statement: reads a variable and raises an exception
-            // in case of a format error.
-            case AslLexer.READ:
-                String token = null;
-                Data val = new Data(0);;
-                try {
-                    token = stdin.next();
-                    val.setValue(Integer.parseInt(token)); 
-                } catch (NumberFormatException ex) {
-                    throw new RuntimeException ("Format error when reading a number: " + token);
-                }
-                /*AslTree tson = t.getChild(0);
-                if(tson.getType() == AslLexer.LBRACK){
-		  Stack.defineVariable(tson.getChild(0).getText(), val, tson.getChild(1).getIntValue);
-                }
-                else*/
-		break;
-            // Write statement: it can write an expression or a string.
-            case AslLexer.WRITE:
-                AslTree v = t.getChild(0);
-                // Special case for strings
-                if (v.getType() == AslLexer.STRING) {
-                    System.out.format(v.getStringValue());
-                }
-                // Write an expression
-                System.out.print(evaluateExpression(v).toString());
-                break;
-                
-            case AslLexer.INIROBOT:
-		String instruct = "rLocate ";
-		int n = t.getChildCount();
-		for(int i = 0; i < n-1; i++){
-		  String str = evalRoboBasic(t.getChild(i)); //FUNCION DE EVALUAR CHUNGA;
-		  instruct += str;
-		  instruct += ", ";
-		}
-		String str = evalRoboBasic(t.getChild(t.getChildCount()-1));
-		instruct += str;
-		programa.add(instruct);
-		break;
-	   case AslLexer.NOBSTACLE:
-		instruct = "rInvisible ";
-		n = t.getChildCount();
-		for (int i = 0; i < n-1; i++) {
-		  str = t.getChild(i).getText(); //FUNCION DE EVALUAR CHUNGA;
-		  instruct += str;
-		  instruct += ", ";
-		}
-		str = t.getChild(t.getChildCount()-1).getText();
-		instruct += str;
-		programa.add(instruct);
-		break;	  
-	   case AslLexer.PINTARCOLOR:
-		instruct = "rPen ";
-		str = t.getChild(0).getText();
-		instruct += str;
-		programa.add(instruct);
-		break;	 
-	  case AslLexer.AVAN:
-		instruct = "rForward ";
-		str = evalRoboBasic(t.getChild(0));
-		instruct += str;
-		programa.add(instruct);
-		break;
-	  case AslLexer.GIRA:
-		instruct = "rTurn ";
-		str = evalRoboBasic(t.getChild(0)); //FUNCION DE EVALUAR CHUNGA;
-		instruct += str;
-		programa.add(instruct);
-		break;
-
-            // Function call
-            case AslLexer.FUNCALL:
-		evaluateFunction(t.getChild(0).getText(), t.getChild(1));
-
-            default: assert false; // Should never happen
-        }
     }
     
     /**
@@ -433,9 +232,13 @@ public class Interp {
                 //Here goes the ARRAY
                 AslTree tson = t.getChild(0);
                 if(tson.getType() == AslLexer.LBRACK){
-		  Stack.defineVariable(tson.getChild(0).getText(), value, tson.getChild(1).getIntValue());
+		  Stack.defineVariable(tson.getChild(0).getText(), value);
+		  Data d = Stack.getVariable(tson.getChild(0).getText());
+		  int posicio = tson.getChild(1).getIntValue();
+		  if (value.isBoolean()) d.setValue(posicio, value.getBooleanValue());
+		  else d.setValue(posicio, value.getIntegerValue());
                 }
-                else Stack.defineVariable (t.getChild(0).getText(), value, -1);
+                else Stack.defineVariable (t.getChild(0).getText(), value);
                 return null;
 
             // If-then-else
@@ -479,7 +282,7 @@ public class Interp {
                 if(tson.getType() == AslLexer.LBRACK){
 		  Stack.defineVariable(tson.getChild(0).getText(), val, tson.getChild(1).getIntValue);
                 }
-                else*/ Stack.defineVariable (t.getChild(0).getText(), val, -1);
+                else*/ Stack.defineVariable (t.getChild(0).getText(), val);
                 return null;
 
             // Write statement: it can write an expression or a string.
@@ -494,10 +297,63 @@ public class Interp {
                 // Write an expression
                 System.out.print(evaluateExpression(v).toString());
                 return null;
+                
+	    case AslLexer.INIROBOT:
+		String instruct = "rLocate ";
+		int n = t.getChildCount();
+		for(int i = 0; i < n-1; i++){
+		  Data number = evaluateExpression(t.getChild(i));
+		  String str = number.getEquivalent();
+		  checkInteger(number);
+		  instruct += str;
+		  instruct += ", ";
+		}
+		Data number = evaluateExpression(t.getChild(t.getChildCount()-1));
+		String str = number.getEquivalent();
+		checkInteger(number);
+		instruct += str;
+		programa.add(instruct);
+		return null;
 		
+	    case AslLexer.NOBSTACLE:
+		instruct = "rInvisible ";
+		n = t.getChildCount();
+		for (int i = 0; i < n-1; i++) {
+		  str = t.getChild(i).getText();
+		  instruct += str;
+		  instruct += ", ";
+		}
+		str = t.getChild(t.getChildCount()-1).getText();
+		instruct += str;
+		programa.add(instruct);
+		return null;
+	    case AslLexer.PINTARCOLOR:
+		instruct = "rPen ";
+		str = t.getChild(0).getText();
+		instruct += str;
+		programa.add(instruct);
+		return null;
+	    case AslLexer.AVAN:
+		instruct = "rForward ";
+		number = evaluateExpression(t.getChild(0));
+		checkInteger(number);
+		str = number.getEquivalent();
+		instruct += str;
+		programa.add(instruct);
+		return null;
+	    case AslLexer.GIRA:
+		instruct = "rTurn ";
+		number = evaluateExpression(t.getChild(0));
+		checkInteger(number);
+		str = number.getEquivalent();
+		instruct += str;
+		programa.add(instruct);
+		return null;
+
             // Function call
             case AslLexer.FUNCALL:
-		evaluateFunction(t.getChild(0).getText(), t.getChild(1));
+		programa.add(t.getChild(0).getText()+"()");
+                executeFunction(t.getChild(0).getText(), t.getChild(1));
                 return null;
 
             default: assert false; // Should never happen
@@ -507,130 +363,66 @@ public class Interp {
         assert false;
         return null;
     }
-
-	/**
-		* ASDFJASPFASGFAJGJPOS
-	*/
-	
+    
     /**
-     * Esta función se asegura que no haya ningún caracter o expresión que
-     * RoboBASIC no pueda asimilar y transforma la expresión y sus hijos
-     * en un String.
-     * @param t The AST of the expression
-     * @return The value of the expression.
-    */
+     * Executes a block of instructions. The block is terminated
+     * as soon as an instruction returns a non-null result.
+     * Non-null results are only returned by "return" statements.
+     * @param t The AST of the block of instructions.
+     * @return The data returned by the instructions (null if no return
+     * statement has been executed).
+     */
+    private Data executeListInstructions (AslTree t) {
+        assert t != null;
+        Data result = null;
+        int ninstr = t.getChildCount();
+        for (int i = 0; i < ninstr; ++i) {
+            result = executeInstruction (t.getChild(i));
+            if (result != null) return result;
+        }
+        return null;
+    }
     
-    private String evalRoboBasic(AslTree t){ // Mirar comentario arriba
-      String toreturn = "";
-      assert t != null;
-
-      int previous_line = lineNumber();
-      setLineNumber(t);
-      int type = t.getType();
-
-      // Atoms
+    /**
+     * Gets the operator in the form of a string. Translates operator into string.
+     */
+    
+    private String getStringOperator(int type){
       switch (type) {
-	// A variable
-	case AslLexer.ID:
-	case AslLexer.INT:
-	case AslLexer.BOOLEAN:
-	case AslLexer.COLOR:
-	    toreturn = t.getText();
-	    return toreturn;
-	// A function call. Checks that the function returns a result.
-	case AslLexer.FUNCALL:
-	    //????
-	    break;
-	// Array
-	case AslLexer.LBRACK:
-	  toreturn = t.getChild(0).getText();
-	  toreturn += "[";
-	  toreturn += evalRoboBasic(t.getChild(1));
-	  toreturn += "] ";
-	  return toreturn;
-	default: break;
-      }
-    
-      // Unary operators
-      if (t.getChildCount() == 1) {
-	  switch (type) {
-	      case AslLexer.PLUS:
-		  toreturn = "+";
-		  toreturn += evalRoboBasic(t.getChild(0));
-		  break;
-	      case AslLexer.MINUS:
-		  toreturn = "-";
-		  toreturn += evalRoboBasic(t.getChild(0));
-		  break;
-	      case AslLexer.NOT:
-		  toreturn = "!";
-		  toreturn += evalRoboBasic(t.getChild(0));
-		  break;
-	      case AslLexer.LPAREN:
-		toreturn = "(";
-		toreturn += evalRoboBasic(t.getChild(0));
-		toreturn += ")";
-		return toreturn;
-	      default: assert false; // Should never happen
-	  }
-	  return toreturn;
-      }
-      else{
-	// Two operands
-	String op = "";
-	switch (type) {
-	  // Relational operators
-	  case AslLexer.EQUAL:
-	      op = "==";
-	      break;
-	  case AslLexer.NOT_EQUAL:
-	      op = "!=";
-	      break;
-	  case AslLexer.LT:
-	      op = "<";
-	      break;
-	  case AslLexer.LE:
-	      op = "<=";
-	      break;
-	  case AslLexer.GT:
-	      op = ">";
-	      break;
-	  case AslLexer.GE:
-	      op = ">=";
-	      break;
+	// Relational operators
+	case AslLexer.EQUAL:
+	  return "== ";
+	case AslLexer.NOT_EQUAL:
+	  return " != ";
+	case AslLexer.LT:
+	  return " < ";
+	case AslLexer.LE:
+	  return " <= ";
+	case AslLexer.GT:
+	  return " > ";
+	case AslLexer.GE:
+	  return " >= ";
 
-	  // Arithmetic operators
-	  case AslLexer.PLUS:
-	      op = "+";
-	      break;
-	  case AslLexer.MINUS:
-	      op = "-";
-	      break;
-	  case AslLexer.MUL:
-	      op = "*";
-	      break;
-	  case AslLexer.DIV:
-	      op = "/";
-	      break;
-	  case AslLexer.MOD:
-	      op = "%";
-	      break;
+	// Arithmetic operators
+	case AslLexer.PLUS:
+	  return " + ";
+	case AslLexer.MINUS:
+	  return " - ";
+	case AslLexer.MUL:
+	  return " * ";
+	case AslLexer.DIV:
+	  return " / ";
+	case AslLexer.MOD:
+	  return " % ";
 
-	  // Boolean operators
-	  case AslLexer.AND:
-	      op = "&&";
-	      break;
-	  case AslLexer.OR:
-	      op = "||";
-	      break;
-
-	  default: assert false; // Should never happen
-	}
-	toreturn = evalRoboBasic(t.getChild(0));
-	toreturn += op+evalRoboBasic(t.getChild(1));
-	
+	// Boolean operators
+	case AslLexer.AND:
+	  return " && ";
+	case AslLexer.OR:
+	  return " || ";
+	default: assert false; // Should never happen
       }
-      return toreturn;
+      return "";
     }
     
     /**
@@ -646,43 +438,54 @@ public class Interp {
         setLineNumber(t);
         int type = t.getType();
 
+        String equivalent = "";
         Data value = null;
         // Atoms
         switch (type) {
             // A variable
             case AslLexer.ID:
                 value = new Data(Stack.getVariable(t.getText()));
+                value.defineString(t.getText());
                 break;
             // An integer literal
             case AslLexer.INT:
                 value = new Data(t.getIntValue());
+                value.defineString(t.getText());
                 break;
             // A Boolean literal
             case AslLexer.BOOLEAN:
                 value = new Data(t.getBooleanValue());
+                value.defineString(t.getText());
                 break;
+                
             // A function call. Checks that the function returns a result.
             case AslLexer.FUNCALL:
-                value = executeFunction(t.getChild(0).getText(), t.getChild(1));
-                assert value != null;
-                if (value.isVoid()) {
-                    throw new RuntimeException ("function expected to return a value");
-                }
-                break;
+		value.defineString(t.getChild(0).getText()+"()");
+		value = executeFunction(t.getChild(0).getText(), t.getChild(1));
+		assert value != null;
+		if (value.isVoid()) {
+		    throw new RuntimeException ("function expected to return a value");
+		}
+		break;
+            
             // Array
             case AslLexer.LBRACK:
 		value = new Data(Stack.getVariable(t.getChild(0).getText()));
 		Data value2 = evaluateExpression(t.getChild(1));
+		equivalent = "[";
+		equivalent += value2.getEquivalent();
+		equivalent += "]";
 		if(value.getType() == Data.Type.ARRAYB){
 		  value = new Data(value.getArrayBooleanValue(value2.getIntegerValue()));
 		}
 		else{
 		  value = new Data(value.getArrayIntegerValue(value2.getIntegerValue()));
 		}
+		value.defineString(equivalent);
                 break;
             default: break;
         }
-
+        
         // Retrieve the original line and return
         if (value != null) {
             setLineNumber(previous_line);
@@ -692,26 +495,43 @@ public class Interp {
         // Unary operators
         value = evaluateExpression(t.getChild(0));
         if (t.getChildCount() == 1) {
-            switch (type) {
-                case AslLexer.PLUS:
-                    checkInteger(value);
-                    break;
-                case AslLexer.MINUS:
-                    checkInteger(value);
-                    value.setValue(-value.getIntegerValue());
-                    break;
-                case AslLexer.NOT:
-                    checkBoolean(value);
-                    value.setValue(!value.getBooleanValue());
-                    break;
-                default: assert false; // Should never happen
-            }
-            setLineNumber(previous_line);
-            return value;
+	  String operator = "";
+	  switch (type) {
+	      case AslLexer.PLUS:
+		  checkInteger(value);
+		  operator = "+";
+		  equivalent = value.toString();
+		  value.setValue(-value.getIntegerValue());
+		  break;
+	      case AslLexer.MINUS:
+		  checkInteger(value);
+		  operator = "-";
+		  equivalent = value.toString();
+		  value.setValue(-value.getIntegerValue());
+		  break;
+	      case AslLexer.NOT:
+		  checkBoolean(value);
+		  operator = "!";
+		  equivalent = value.toString();
+		  value.setValue(!value.getBooleanValue());
+		  break;
+	      case AslLexer.LPAREN:
+		  operator = "(";
+		  value.setData(evaluateExpression(t.getChild(0)));
+		  equivalent = value.getEquivalent();
+		  equivalent += ")";
+		  break;
+	      default: assert false; // Should never happen
+	  }
+	  value.defineString(operator+equivalent);
+	  setLineNumber(previous_line);
+	  return value;
         }
 
         // Two operands
-        Data value2;
+        Data value2 = null;
+        String operator = getStringOperator(type);
+        
         switch (type) {
             // Relational operators
             case AslLexer.EQUAL:
@@ -749,7 +569,7 @@ public class Interp {
 
             default: assert false; // Should never happen
         }
-        
+        value.defineString(value.getEquivalent()+operator+value2.getEquivalent());
         setLineNumber(previous_line);
         return value;
     }
@@ -787,6 +607,13 @@ public class Interp {
         return v;
     }
 
+    /** Checks that the data is String and raises an exception if it is not. */
+    private void checkString (Data b) {
+        if (!b.isString()) {
+            throw new RuntimeException ("Expecting Boolean expression");
+        }
+    }
+    
     /** Checks that the data is Boolean and raises an exception if it is not. */
     private void checkBoolean (Data b) {
         if (!b.isBoolean()) {
