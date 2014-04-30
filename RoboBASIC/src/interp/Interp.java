@@ -30,6 +30,7 @@ package interp;
 import parser.*;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.io.*;
@@ -128,6 +129,25 @@ public class Interp {
             FuncName2Tree.put(fname, f);
         } 
     }
+    
+    /**
+     * Prepares the functions
+     */
+    public void prepareFunctions(){
+      Set a = FuncName2Tree.keySet();
+      String[] stringArray;
+      stringArray = (String[]) a.toArray(new String[a.size()]);
+      for (int i = 0; i < stringArray.length; i++){
+	String fname = stringArray[i];
+	AslTree f = (AslTree) FuncName2Tree.get(fname);
+	if(!fname.equals("main")){
+	  programa.add(fname+":");
+	  System.out.println(fname);
+	  Data d = executeFunction(fname, null);
+	  programa.add("Return");
+	}
+      }
+    }
 
     /**
      * Performs some pre-processing on the AST. Basically, it
@@ -195,7 +215,7 @@ public class Interp {
         }
 
         // Execute the instructions
-        Data result = executeListInstructions (f.getChild(2));
+        Data result = executeListInstructions (f.getChild(2), "");
 
         // If the result is null, then the function returns void
         if (result == null) result = new Data();
@@ -217,7 +237,7 @@ public class Interp {
      * non-null only if a return statement is executed or a block
      * of instructions executing a return.
      */
-    private Data executeInstruction (AslTree t) {
+    private Data executeInstruction (AslTree t, String ident) {
         assert t != null;
         
         setLineNumber(t);
@@ -231,23 +251,30 @@ public class Interp {
                 value = evaluateExpression(t.getChild(1));
                 //Here goes the ARRAY
                 AslTree tson = t.getChild(0);
+                String nom;
                 if(tson.getType() == AslLexer.LBRACK){
+		  nom = tson.getChild(0).getText();
 		  Stack.defineVariable(tson.getChild(0).getText(), value);
 		  Data d = Stack.getVariable(tson.getChild(0).getText());
 		  int posicio = tson.getChild(1).getIntValue();
 		  if (value.isBoolean()) d.setValue(posicio, value.getBooleanValue());
 		  else d.setValue(posicio, value.getIntegerValue());
                 }
-                else Stack.defineVariable (t.getChild(0).getText(), value);
+                else{
+		  nom = t.getChild(0).getText();
+		  Stack.defineVariable (t.getChild(0).getText(), value);
+		}
+                value.defineString(nom+" = "+ value.getEquivalent());
+                programa.add(ident+value.getEquivalent());
                 return null;
 
             // If-then-else
             case AslLexer.IF:
                 value = evaluateExpression(t.getChild(0));
                 checkBoolean(value);
-                if (value.getBooleanValue()) return executeListInstructions(t.getChild(1));
+                if (value.getBooleanValue()) return executeListInstructions(t.getChild(1), ident);
                 // Is there else statement ?
-                if (t.getChildCount() == 3) return executeListInstructions(t.getChild(2));
+                if (t.getChildCount() == 3) return executeListInstructions(t.getChild(2), ident);
                 return null;
 
             // While
@@ -256,7 +283,7 @@ public class Interp {
                     value = evaluateExpression(t.getChild(0));
                     checkBoolean(value);
                     if (!value.getBooleanValue()) return null;
-                    Data r = executeListInstructions(t.getChild(1));
+                    Data r = executeListInstructions(t.getChild(1), ident);
                     if (r != null) return r;
                 }
 
@@ -312,7 +339,7 @@ public class Interp {
 		String str = number.getEquivalent();
 		checkInteger(number);
 		instruct += str;
-		programa.add(instruct);
+		programa.add(ident+instruct);
 		return null;
 		
 	    case AslLexer.NOBSTACLE:
@@ -325,13 +352,13 @@ public class Interp {
 		}
 		str = t.getChild(t.getChildCount()-1).getText();
 		instruct += str;
-		programa.add(instruct);
+		programa.add(ident+instruct);
 		return null;
 	    case AslLexer.PINTARCOLOR:
 		instruct = "rPen ";
 		str = t.getChild(0).getText();
 		instruct += str;
-		programa.add(instruct);
+		programa.add(ident+instruct);
 		return null;
 	    case AslLexer.AVAN:
 		instruct = "rForward ";
@@ -339,7 +366,7 @@ public class Interp {
 		checkInteger(number);
 		str = number.getEquivalent();
 		instruct += str;
-		programa.add(instruct);
+		programa.add(ident+instruct);
 		return null;
 	    case AslLexer.GIRA:
 		instruct = "rTurn ";
@@ -347,12 +374,12 @@ public class Interp {
 		checkInteger(number);
 		str = number.getEquivalent();
 		instruct += str;
-		programa.add(instruct);
+		programa.add(ident+instruct);
 		return null;
 
             // Function call
             case AslLexer.FUNCALL:
-		programa.add(t.getChild(0).getText()+"()");
+		programa.add(ident+t.getChild(0).getText()+"()");
                 executeFunction(t.getChild(0).getText(), t.getChild(1));
                 return null;
 
@@ -372,12 +399,12 @@ public class Interp {
      * @return The data returned by the instructions (null if no return
      * statement has been executed).
      */
-    private Data executeListInstructions (AslTree t) {
+    private Data executeListInstructions (AslTree t, String ident) {
         assert t != null;
         Data result = null;
         int ninstr = t.getChildCount();
         for (int i = 0; i < ninstr; ++i) {
-            result = executeInstruction (t.getChild(i));
+            result = executeInstruction (t.getChild(i), ident+"  ");
             if (result != null) return result;
         }
         return null;

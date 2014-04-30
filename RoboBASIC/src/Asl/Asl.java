@@ -121,6 +121,7 @@ public class Asl{
             int linenumber = -1;
             try {
                 I = new Interp(t, tracefile); // prepares the interpreter
+                I.prepareFunctions();
                 I.Run();                  // Executes the code
 		ArrayList<String> a = I.getVector();
 		for (int i = 0; i < a.size(); i++){

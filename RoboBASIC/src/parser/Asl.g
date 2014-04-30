@@ -89,7 +89,7 @@ instruction
         :	assign          // Assignment
         |	ite_stmt        // if-then-else
         |	while_stmt      // while statement
-        |   funcall         // Call to a procedure (no result produced)
+        |   	funcall         // Call to a procedure (no result produced)
         |	return_stmt     // Return statement
         |	read            // Read a variable
         | 	write           // Write a string or an expression
@@ -172,11 +172,7 @@ atom    :   ID (LBRACK^ expr RBRACK!)?
         ;
 
 // A function call has a lits of arguments in parenthesis (possibly empty)
-funcall :   ID '(' expr_list? ')' -> ^(FUNCALL ID ^(ARGLIST expr_list?))
-        ;
-
-// A list of expressions separated by commas
-expr_list:  expr (','! expr)*
+funcall :   ID '(' ')' -> ^(FUNCALL ID ^(ARGLIST))
         ;
 
 // Basic tokens
