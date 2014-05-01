@@ -228,7 +228,16 @@ public class Interp {
 
         return result;
     }
+
     
+    private String checkStringBoolean (AslTree t){
+      String ret = "";
+      if(t.getChild(0) != null) ret += (checkStringBoolean(t.getChild(0)) + " ");
+      ret += t.getText();
+      if(t.getChild(1) != null) ret += (" " + checkStringBoolean(t.getChild(1)));
+      return ret;
+    }    
+        
     /**
      * Executes an instruction. 
      * Non-null results are only returned by "return" statements.
@@ -242,6 +251,8 @@ public class Interp {
         
         setLineNumber(t);
         Data value; // The returned value
+        
+        String instruct = ident; // The instructions translated to RoboBasic so far.
 
         // A big switch for all type of instructions
         switch (t.getType()) {
@@ -253,38 +264,48 @@ public class Interp {
                 AslTree tson = t.getChild(0);
                 String nom;
                 if(tson.getType() == AslLexer.LBRACK){
-		  nom = tson.getChild(0).getText();
-		  Stack.defineVariable(tson.getChild(0).getText(), value);
-		  Data d = Stack.getVariable(tson.getChild(0).getText());
-		  int posicio = tson.getChild(1).getIntValue();
-		  if (value.isBoolean()) d.setValue(posicio, value.getBooleanValue());
-		  else d.setValue(posicio, value.getIntegerValue());
+                    nom = tson.getChild(0).getText();
+                    Stack.defineVariable(tson.getChild(0).getText(), value);
+                    Data d = Stack.getVariable(tson.getChild(0).getText());
+                    int posicio = tson.getChild(1).getIntValue();
+                    if (value.isBoolean()) d.setValue(posicio, value.getBooleanValue());
+                    else d.setValue(posicio, value.getIntegerValue());
                 }
                 else{
-		  nom = t.getChild(0).getText();
-		  Stack.defineVariable (t.getChild(0).getText(), value);
-		}
+                    nom = t.getChild(0).getText();
+                    Stack.defineVariable (t.getChild(0).getText(), value);
+                }
                 value.defineString(nom+" = "+ value.getEquivalent());
                 programa.add(ident+value.getEquivalent());
                 return null;
 
             // If-then-else
             case AslLexer.IF:
-                value = evaluateExpression(t.getChild(0));
+                instruct += "if ";
+                instruct += (checkStringBoolean(t.getChild(0)));
+                value = evaluateExpression(t.getChild(0));                
                 checkBoolean(value);
-                if (value.getBooleanValue()) return executeListInstructions(t.getChild(1), ident);
+                programa.add(instruct);
+                executeListInstructions(t.getChild(1), ident);
                 // Is there else statement ?
-                if (t.getChildCount() == 3) return executeListInstructions(t.getChild(2), ident);
-                return null;
+                if (t.getChildCount() == 3){
+                    programa.add(ident + "else");
+                    executeListInstructions(t.getChild(2), ident);
+                }
+                programa.add(ident + "endif");
+                return null;   
 
             // While
             case AslLexer.WHILE:
                 while (true) {
+                    instruct += "while ";
+                    instruct += (checkStringBoolean(t.getChild(0)));                
                     value = evaluateExpression(t.getChild(0));
-                    checkBoolean(value);
-                    if (!value.getBooleanValue()) return null;
+                    checkBoolean(value);                  
+                    programa.add(instruct);                      
                     Data r = executeListInstructions(t.getChild(1), ident);
-                    if (r != null) return r;
+                    programa.add(ident + "wend");
+                    return null;
                 }
 
             // Return
@@ -314,19 +335,13 @@ public class Interp {
 
             // Write statement: it can write an expression or a string.
             case AslLexer.WRITE:
-                AslTree v = t.getChild(0);
-                // Special case for strings
-                if (v.getType() == AslLexer.STRING) {
-                    System.out.format(v.getStringValue());
-                    return null;
-                }
-
-                // Write an expression
-                System.out.print(evaluateExpression(v).toString());
+                instruct += "print ";
+                instruct += evaluateExpression(t.getChild(0)).toString();
+                programa.add(instruct); 
                 return null;
                 
 	    case AslLexer.INIROBOT:
-		String instruct = "rLocate ";
+		instruct = "rLocate ";
 		int n = t.getChildCount();
 		for(int i = 0; i < n-1; i++){
 		  Data number = evaluateExpression(t.getChild(i));
