@@ -392,6 +392,37 @@ public class Interp {
 		programa.add(ident+instruct);
 		return null;
 
+	   case AslLexer.SENTIR:
+		instruct = "rFeel()";
+		programa.add(ident+instruct);
+		return null;
+	   case AslLexer.INFRA:
+		instruct = "rSense()";
+		programa.add(ident+instruct);
+		return null;
+	   case AslLexer.CHOCAR:
+		instruct = "rBumper()";
+		programa.add(ident+instruct);
+		return null;
+	   case AslLexer.ORIENTACION:
+		instruct = "rCompass()";
+		programa.add(ident+instruct);
+		return null;
+	   case AslLexer.DISTANCIACOLOR:
+		instruct = "rBeacon(";
+		str = t.getChild(0).getText();
+		instruct += str;
+		instruct += ")";
+		programa.add(ident+instruct);
+		return null;
+           case AslLexer.MIRAR:
+		instruct = "rLook( ";
+		number = evaluateExpression(t.getChild(0));
+		checkInteger(number);
+		str = number.getEquivalent();
+		instruct += str;
+		programa.add(ident+instruct);
+		return null;
             // Function call
             case AslLexer.FUNCALL:
 		programa.add(ident+t.getChild(0).getText()+"()");
