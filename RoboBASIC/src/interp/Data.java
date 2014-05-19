@@ -52,6 +52,12 @@ public class Data {
     /** Content of the array */
     private int[] content;
 
+    /** Word if it's a string */
+    private String word;
+    
+    /** Word if it's a string */
+    private String[] words;
+    
     /** String equivalent */
     private String written;
     
@@ -61,6 +67,9 @@ public class Data {
     /** Constructor for Booleans */
     Data(boolean b) {type = Type.BOOLEAN; value = b ? 1 : 0; }
 
+    /** Constructor for String */
+    Data(String s) {type = Type.STRING; word = s; }
+    
     /** Constructor for array of int */
     Data(int av, int pos) {
       type = Type.ARRAYI;
@@ -79,6 +88,15 @@ public class Data {
       content[pos] = ab ? 1 : 0;
     }
     
+    /** Constructor for array of string */
+    Data(String s, int pos) {
+      type = Type.ARRAYS;
+      value = pos;
+      words = new String[pos+1];
+      for (int i = 0; i < pos; i++) words[i] = "";
+      words[pos] = s;
+    }
+    
     /** Constructor for void data */
     Data() {type = Type.VOID; }
 
@@ -86,10 +104,17 @@ public class Data {
     Data(Data d) {
       type = d.type;
       value = d.value;
+      word = d.word;
       if (type == Type.ARRAYB || type == Type.ARRAYI){
 	content = new int[d.value+1];
 	for (int i = 0; i < d.value+1; i++){
 	  content[i] = d.content[i];
+	}
+      }
+      else if (type == Type.ARRAYS){
+	words = new String[d.value+1];
+	for (int i = 0; i < d.value+1; i++){
+	  words[i] = d.words[i];
 	}
       }
     }
@@ -103,6 +128,9 @@ public class Data {
     /** Indicates whether the data is Array of integer */
     public boolean isArrayInteger() { return type == Type.ARRAYI; }
 
+    /** Indicates whether the data is Array of String */
+    public boolean isArrayString() { return type == Type.ARRAYS; }
+    
     /** Indicates whether the data is String */
     public boolean isString() { return type == Type.STRING; }
     
@@ -134,6 +162,15 @@ public class Data {
     }
     
     /**
+     * Gets the value of a String data. The method asserts that
+     * the data is a String.
+     */
+    public String getStringValue() {
+        assert type == Type.STRING;
+        return word;
+    }
+    
+    /**
      * Gets the value of an array of integer. The method asserts that
      * the data is an array of integers.
      */
@@ -153,12 +190,28 @@ public class Data {
         else return (content[pos] == 1);
     }
 
+    /**
+     * Gets the value of an array of strings. The method asserts that
+     * the data is an array of strings.
+     */
+    public String getArrayStringValue(int pos) {
+        assert type == Type.ARRAYS;
+        if (pos > value) throw new RuntimeException ("Out of Bounds Exception");
+        else return words[pos];
+    }
+    
     /** Defines a Boolean value for the data */
     public void setValue(boolean b) { type = Type.BOOLEAN; value = b ? 1 : 0; }
 
     /** Defines an integer value for the data */
     public void setValue(int v) { type = Type.INTEGER; value = v; }
 
+    /** Defines an integer value for the data */
+    public void setValue(String s) {
+      type = Type.STRING;
+      word = s;
+    }
+    
     /** Defines an array of booleans value for the data */
     public void setValue(int pos, boolean b) {
       if (type == Type.ARRAYB && (pos > value)){
@@ -195,6 +248,24 @@ public class Data {
       type = Type.ARRAYI;
     }
     
+    /** Defines an array string value for the data */
+    public void setValue(int pos, String v) {
+      if (type == Type.ARRAYS && (pos > value)){
+	String[] contentaux = new String[pos+1];
+	for (int i = 0; i < value; i++) contentaux[i] = words[i];
+	words = new String[pos+1];
+	for (int i = 0; i < value; i++) words[i] = contentaux[i];
+	for (int i = value+1; i < pos; i++) words[i] = "";
+	words[pos] = v;
+      }
+      else{
+	words = new String[pos+1];
+	for (int i = 0; i < pos; i++) pos = 0;
+	words[pos] = v;
+      }
+      type = Type.ARRAYS;
+    }
+    
     /** Copies the value from another data */
     public void setData(Data d) { 
       type = d.type;
@@ -203,7 +274,16 @@ public class Data {
 	content = new int[value+1];
 	for (int i = 0; i < value+1; i++) content[i] = d.content[i];
       }
-      else content = new int[1];
+      else if (type == Type.ARRAYS){
+	words = new String[d.value+1];
+	for (int i = 0; i < d.value+1; i++){
+	  words[i] = d.words[i];
+	}
+      }
+      else{
+	content = new int[1];
+	words = new String[1];
+      }
     }
     
     /** Define string */

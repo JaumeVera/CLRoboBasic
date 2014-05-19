@@ -111,6 +111,10 @@ special_instruction
 sensors
 	:	SENTIR^
 	|	INFRA^
+	|	CHOCAR^
+	|	DISTANCIACOLOR^ COLOR
+	|	ORIENTACION
+	|	MIRAR ^ expr
 	;
   
 // Assignment
@@ -215,8 +219,12 @@ PINTARCOLOR	: 'pinta';
 OBSTACLE	: 'obstacle';
 SENTIR	: 'sentir';
 INFRA	: 'infrared';
+CHOCAR	: 'chocar';
+DISTANCIACOLOR	: 'distanciacolor';
+ORIENTACION	: 'orientacion';
+MIRAR	: 'mirar';
 GIRA	: 'gira';
-COLOR	: ('red' | 'green' | 'yellow' | 'blue' | 'black' | 'white');
+COLOR	: ( 'black' | 'blue' | 'green' | 'cyan' | 'red' | 'magenta' | 'brown' | 'gray' | 'darkgray' | 'lightblue' | 'lightcyan' | 'lightred' | 'lightmagenta' | 'yellow' | 'white');
 ESTADOPINTAR	: ('up' | 'down');
 ID  	:	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 INT 	:	'0'..'9'+ ;

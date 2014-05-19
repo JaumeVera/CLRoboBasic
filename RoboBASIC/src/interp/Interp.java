@@ -97,7 +97,7 @@ public class Interp {
     /** Runs the program by calling the main function without parameters. */
     public void Run() {
       programa.add("MainProgram:");
-      executeFunction ("main", null);
+      executeFunction ("main", null, true);
       programa.add("End");
     }
 
@@ -142,8 +142,7 @@ public class Interp {
 	AslTree f = (AslTree) FuncName2Tree.get(fname);
 	if(!fname.equals("main")){
 	  programa.add(fname+":");
-	  System.out.println(fname);
-	  Data d = executeFunction(fname, null);
+	  Data d = executeFunction(fname, null, true);
 	  programa.add("Return");
 	}
       }
@@ -185,7 +184,7 @@ public class Interp {
      * @param args The AST node representing the list of arguments of the caller.
      * @return The data returned by the function.
      */
-    private Data executeFunction (String funcname, AslTree args) {
+    private Data executeFunction (String funcname, AslTree args, boolean prepare) {
         // Get the AST of the function
         AslTree f = FuncName2Tree.get(funcname);
         if (f == null) throw new RuntimeException(" function " + funcname + " not declared");
@@ -215,7 +214,7 @@ public class Interp {
         }
 
         // Execute the instructions
-        Data result = executeListInstructions (f.getChild(2), "");
+        Data result = executeListInstructions (f.getChild(2), "", prepare);
 
         // If the result is null, then the function returns void
         if (result == null) result = new Data();
@@ -246,7 +245,7 @@ public class Interp {
      * non-null only if a return statement is executed or a block
      * of instructions executing a return.
      */
-    private Data executeInstruction (AslTree t, String ident) {
+    private Data executeInstruction (AslTree t, String ident, boolean prepare) {
         assert t != null;
         
         setLineNumber(t);
@@ -276,7 +275,7 @@ public class Interp {
                     Stack.defineVariable (t.getChild(0).getText(), value);
                 }
                 value.defineString(nom+" = "+ value.getEquivalent());
-                programa.add(ident+value.getEquivalent());
+                if (prepare) programa.add(ident+value.getEquivalent());
                 return null;
 
             // If-then-else
@@ -285,14 +284,14 @@ public class Interp {
                 instruct += (checkStringBoolean(t.getChild(0)));
                 value = evaluateExpression(t.getChild(0));                
                 checkBoolean(value);
-                programa.add(instruct);
-                executeListInstructions(t.getChild(1), ident);
+                if(prepare) programa.add(instruct);
+                executeListInstructions(t.getChild(1), ident, prepare);
                 // Is there else statement ?
                 if (t.getChildCount() == 3){
-                    programa.add(ident + "else");
-                    executeListInstructions(t.getChild(2), ident);
+                    if(prepare) programa.add(ident + "else");
+                    executeListInstructions(t.getChild(2), ident, prepare);
                 }
-                programa.add(ident + "endif");
+                if(prepare) programa.add(ident + "endif");
                 return null;   
 
             // While
@@ -302,16 +301,18 @@ public class Interp {
                     instruct += (checkStringBoolean(t.getChild(0)));                
                     value = evaluateExpression(t.getChild(0));
                     checkBoolean(value);                  
-                    programa.add(instruct);                      
-                    Data r = executeListInstructions(t.getChild(1), ident);
-                    programa.add(ident + "wend");
+                    if(prepare) programa.add(instruct);                      
+                    Data r = executeListInstructions(t.getChild(1), ident, prepare);
+                    if(prepare) programa.add(ident + "wend");
                     return null;
                 }
 
             // Return
             case AslLexer.RETURN:
                 if (t.getChildCount() != 0) {
-                    return evaluateExpression(t.getChild(0));
+		    Data a = new Data (evaluateExpression(t.getChild(0)));
+		    programa.add("Return "+a.getEquivalent());
+                    return a;
                 }
                 return new Data(); // No expression: returns void data
 
@@ -337,7 +338,7 @@ public class Interp {
             case AslLexer.WRITE:
                 instruct += "print ";
                 instruct += evaluateExpression(t.getChild(0)).toString();
-                programa.add(instruct); 
+                if(prepare) programa.add(instruct); 
                 return null;
                 
 	    case AslLexer.INIROBOT:
@@ -354,7 +355,7 @@ public class Interp {
 		String str = number.getEquivalent();
 		checkInteger(number);
 		instruct += str;
-		programa.add(ident+instruct);
+		if(prepare) programa.add(ident+instruct);
 		return null;
 		
 	    case AslLexer.NOBSTACLE:
@@ -367,13 +368,13 @@ public class Interp {
 		}
 		str = t.getChild(t.getChildCount()-1).getText();
 		instruct += str;
-		programa.add(ident+instruct);
+		if(prepare) programa.add(ident+instruct);
 		return null;
 	    case AslLexer.PINTARCOLOR:
 		instruct = "rPen ";
 		str = t.getChild(0).getText();
 		instruct += str;
-		programa.add(ident+instruct);
+		if(prepare) programa.add(ident+instruct);
 		return null;
 	    case AslLexer.AVAN:
 		instruct = "rForward ";
@@ -381,52 +382,65 @@ public class Interp {
 		checkInteger(number);
 		str = number.getEquivalent();
 		instruct += str;
-		programa.add(ident+instruct);
+		if(prepare) programa.add(ident+instruct);
 		return null;
+		
 	    case AslLexer.GIRA:
 		instruct = "rTurn ";
 		number = evaluateExpression(t.getChild(0));
 		checkInteger(number);
 		str = number.getEquivalent();
 		instruct += str;
-		programa.add(ident+instruct);
+		if(prepare) programa.add(ident+instruct);
 		return null;
 
+	   // Sensors
 	   case AslLexer.SENTIR:
 		instruct = "rFeel()";
-		programa.add(ident+instruct);
-		return null;
+		if(prepare) programa.add(ident+instruct);
+		Data sent = new Data(true);
+		return sent;
+		
 	   case AslLexer.INFRA:
 		instruct = "rSense()";
-		programa.add(ident+instruct);
-		return null;
+		if(prepare) programa.add(ident+instruct);
+		sent = new Data(true);
+		return sent;
+		
 	   case AslLexer.CHOCAR:
 		instruct = "rBumper()";
 		programa.add(ident+instruct);
-		return null;
+		sent = new Data(true);
+		return sent;
+		
 	   case AslLexer.ORIENTACION:
 		instruct = "rCompass()";
-		programa.add(ident+instruct);
-		return null;
+		if(prepare) programa.add(ident+instruct);
+		Data comp = new Data(2,0);
+		return comp;
+		
 	   case AslLexer.DISTANCIACOLOR:
 		instruct = "rBeacon(";
 		str = t.getChild(0).getText();
 		instruct += str;
 		instruct += ")";
-		programa.add(ident+instruct);
-		return null;
+		if(prepare) programa.add(ident+instruct);
+		Data distance = new Data(0);
+		return distance;
            case AslLexer.MIRAR:
 		instruct = "rLook( ";
 		number = evaluateExpression(t.getChild(0));
 		checkInteger(number);
 		str = number.getEquivalent();
 		instruct += str;
-		programa.add(ident+instruct);
-		return null;
+		if(prepare) programa.add(ident+instruct);
+		Data color = new Data("green");
+		return color;
+		
             // Function call
             case AslLexer.FUNCALL:
-		programa.add(ident+t.getChild(0).getText()+"()");
-                executeFunction(t.getChild(0).getText(), t.getChild(1));
+		if(prepare) programa.add(ident+t.getChild(0).getText()+"()");
+                executeFunction(t.getChild(0).getText(), t.getChild(1), false);
                 return null;
 
             default: assert false; // Should never happen
@@ -445,12 +459,12 @@ public class Interp {
      * @return The data returned by the instructions (null if no return
      * statement has been executed).
      */
-    private Data executeListInstructions (AslTree t, String ident) {
+    private Data executeListInstructions (AslTree t, String ident, boolean prepare) {
         assert t != null;
         Data result = null;
         int ninstr = t.getChildCount();
         for (int i = 0; i < ninstr; ++i) {
-            result = executeInstruction (t.getChild(i), ident+"  ");
+            result = executeInstruction (t.getChild(i), ident+"  ", prepare);
             if (result != null) return result;
         }
         return null;
@@ -530,11 +544,35 @@ public class Interp {
                 value = new Data(t.getBooleanValue());
                 value.defineString(t.getText());
                 break;
-                
+            
+	   case AslLexer.SENTIR:
+		String instruct = "rFeel()";
+		Data sent = new Data(true);
+		sent.defineString(instruct);
+		return sent;
+		
+	   case AslLexer.INFRA:
+		instruct = "rSense()";
+		sent = new Data(true);
+		sent.defineString(instruct);
+		return sent;
+		
+	   case AslLexer.CHOCAR:
+		instruct = "rBumper()";
+		sent = new Data(true);
+		sent.defineString(instruct);
+		return sent;
+		
+	   case AslLexer.ORIENTACION:
+		instruct = "rCompass()";
+		Data comp = new Data(2,0);
+		comp.defineString(instruct);
+		return comp;
+            
             // A function call. Checks that the function returns a result.
             case AslLexer.FUNCALL:
 		value.defineString(t.getChild(0).getText()+"()");
-		value = executeFunction(t.getChild(0).getText(), t.getChild(1));
+		value = executeFunction(t.getChild(0).getText(), t.getChild(1), false);
 		assert value != null;
 		if (value.isVoid()) {
 		    throw new RuntimeException ("function expected to return a value");
@@ -588,6 +626,26 @@ public class Interp {
 		  equivalent = value.toString();
 		  value.setValue(!value.getBooleanValue());
 		  break;
+		  
+	      case AslLexer.DISTANCIACOLOR:
+		    String instruct = "rBeacon(";
+		    String str = t.getChild(0).getText();
+		    instruct += str;
+		    instruct += ")";
+		    Data distance = new Data(0);
+		    distance.defineString(instruct);
+		    return distance;
+		    
+	      case AslLexer.MIRAR:
+		    instruct = "rLook( ";
+		    Data number = evaluateExpression(t.getChild(0));
+		    checkInteger(number);
+		    str = number.getEquivalent();
+		    instruct += str;
+		    Data color = new Data("green");
+		    color.defineString(instruct);
+		    return color;
+		  
 	      case AslLexer.LPAREN:
 		  operator = "(";
 		  value.setData(evaluateExpression(t.getChild(0)));
