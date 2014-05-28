@@ -80,7 +80,7 @@ param   :   '&' id=ID -> ^(PREF[$id,$id.text])
 
 // A list of instructions, all of them gouped in a subtree
 block_instructions
-        :	 instruction (';' instruction)*
+        :	 instruction ';' (instruction ';')*
             -> ^(LIST_INSTR instruction+)
         ;
 
