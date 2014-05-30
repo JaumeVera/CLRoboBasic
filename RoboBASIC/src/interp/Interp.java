@@ -361,7 +361,19 @@ public class Interp {
 	    case AslLexer.NOBSTACLE:
 		instruct = "rInvisible ";
 		n = t.getChildCount();
-		for (int i = 0; i < n-1; i++) {
+		for (int i = 0; i < n-2; i++) {
+		  str = t.getChild(i).getText();
+		  instruct += str;
+		  instruct += ", ";
+		}
+		str = t.getChild(t.getChildCount()-1).getText();
+		instruct += str;
+		if(prepare) programa.add(ident+instruct);
+		return null;
+	    case AslLexer.OBSTACLE:
+		instruct = "CircleWH ";
+		n = t.getChildCount();
+		for (int i = 0; i < n-2; i++) {
 		  str = t.getChild(i).getText();
 		  instruct += str;
 		  instruct += ", ";
