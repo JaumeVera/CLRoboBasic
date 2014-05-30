@@ -32,6 +32,7 @@ import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
 
+
 // Imports from Java
 import org.apache.commons.cli.*; // Command Language Interface
 import java.io.*;
@@ -124,9 +125,28 @@ public class Asl{
                 I.prepareFunctions();
                 I.Run();                  // Executes the code
 		ArrayList<String> a = I.getVector();
+		BufferedWriter writer = null;
+		try {
+			    writer = new BufferedWriter(new OutputStreamWriter(
+			          new FileOutputStream(args[0] + ".java"), "utf-8"));
+			   
+			} catch (IOException ex) {
+			  // report
+			} 
 		for (int i = 0; i < a.size(); i++){
-		  System.out.println(a.get(i));
+		  //System.out.println(a.get(i));
+
+			try {
+			    
+			    writer.write(a.get(i));
+			    writer.newLine();
+			} catch (IOException ex) {
+			  // report
+			} 
+		  
 		}
+		writer.close();
+	
             } catch (RuntimeException e) {
                 if (I != null) linenumber = I.lineNumber();
                 System.err.print ("Runtime error");
