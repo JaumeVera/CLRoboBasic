@@ -280,9 +280,10 @@ public class Interp {
 
             // If-then-else
             case AslLexer.IF:
+		value = evaluateExpression(t.getChild(0));
                 instruct += "if ";
-                instruct += (checkStringBoolean(t.getChild(0)));
-                value = evaluateExpression(t.getChild(0));                
+                instruct += value.getEquivalent();
+                value = evaluateExpression(t.getChild(0));        
                 checkBoolean(value);
                 if(prepare) programa.add(instruct);
                 executeListInstructions(t.getChild(1), ident, prepare);
@@ -297,9 +298,9 @@ public class Interp {
             // While
             case AslLexer.WHILE:
                 while (true) {
-                    instruct += "while ";
-                    instruct += (checkStringBoolean(t.getChild(0)));                
                     value = evaluateExpression(t.getChild(0));
+                    instruct += "while ";
+                    instruct += value.getEquivalent();
                     checkBoolean(value);                  
                     if(prepare) programa.add(instruct);                      
                     Data r = executeListInstructions(t.getChild(1), ident, prepare);
@@ -622,20 +623,20 @@ public class Interp {
 	  switch (type) {
 	      case AslLexer.PLUS:
 		  checkInteger(value);
-		  operator = "+";
-		  equivalent = value.toString();
+		  operator = "+ ";
+		  equivalent = value.getEquivalent();
 		  value.setValue(-value.getIntegerValue());
 		  break;
 	      case AslLexer.MINUS:
 		  checkInteger(value);
 		  operator = "-";
-		  equivalent = value.toString();
+		  equivalent = value.getEquivalent();
 		  value.setValue(-value.getIntegerValue());
 		  break;
 	      case AslLexer.NOT:
 		  checkBoolean(value);
 		  operator = "!";
-		  equivalent = value.toString();
+		  equivalent = value.getEquivalent();
 		  value.setValue(!value.getBooleanValue());
 		  break;
 		  
