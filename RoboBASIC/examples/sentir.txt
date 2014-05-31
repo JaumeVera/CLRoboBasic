@@ -1,0 +1,11 @@
+func main()
+inirobot 270,150,-90;
+noobstacle green,blue;
+pinta down;
+obstacle 100,100,100,100,red,red;
+while sentir do
+avanca 1;
+endwhile;
+gira 180;
+avanca 10;
+endfunc

@@ -151,7 +151,11 @@ expr    :   boolterm (OR^ boolterm)*
 boolterm:   boolfact (AND^ boolfact)*
         ;
 
-boolfact:   num_expr ((EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^) num_expr)?
+bitwiseops:	BOR
+	| BAND
+	;
+        
+boolfact:   num_expr ((EQUAL^ | NOT_EQUAL^ | LT^ | LE^ | GT^ | GE^ | bitwiseops^) num_expr)?
         ;
 
 num_expr:   term ( (PLUS^ | MINUS^) term)*
@@ -194,9 +198,11 @@ MINUS	: '-' ;
 MUL	    : '*';
 DIV	    : '/';
 MOD	    : '%' ;
+BAND	    : 'band' ;
+BOR	    : 'bor' ;
 NOT	    : 'not';
 AND	    : 'and' ;
-OR	    : 'or' ;	
+OR	    : 'or' ;
 IF  	: 'if' ;
 THEN	: 'then' ;
 ELSE	: 'else' ;

@@ -520,6 +520,10 @@ public class Interp {
 	  return " && ";
 	case AslLexer.OR:
 	  return " || ";
+        case AslLexer.BOR:
+	  return " | ";        
+        case AslLexer.BAND:
+	  return " & ";
 	default: assert false; // Should never happen
       }
       return "";
@@ -596,6 +600,13 @@ public class Interp {
 		}
 		break;
             
+	    case AslLexer.LPAREN:
+		equivalent = "(";
+		value = evaluateExpression(t.getChild(0));
+		equivalent += value.getEquivalent();
+		equivalent += ")";
+		break;
+            
             // Array
             case AslLexer.LBRACK:
 		value = new Data(Stack.getVariable(t.getChild(0).getText()));
@@ -613,7 +624,6 @@ public class Interp {
                 break;
             default: break;
         }
-        
         // Retrieve the original line and return
         if (value != null) {
             setLineNumber(previous_line);
@@ -678,8 +688,7 @@ public class Interp {
 
         // Two operands
         Data value2 = null;
-        String operator = getStringOperator(type);
-        
+        String operator = "";
         switch (type) {
             // Relational operators
             case AslLexer.EQUAL:
@@ -688,11 +697,18 @@ public class Interp {
             case AslLexer.LE:
             case AslLexer.GT:
             case AslLexer.GE:
+            case AslLexer.BOR:
+            case AslLexer.BAND:
+		operator = getStringOperator(type);
                 value2 = evaluateExpression(t.getChild(1));
+                boolean bitwise = (type == AslLexer.BOR || type == AslLexer.BAND);
                 if (value.getType() != value2.getType()) {
                   throw new RuntimeException ("Incompatible types in relational expression");
                 }
-                value = value.evaluateRelational(type, value2);
+                if (!bitwise) value = value.evaluateRelational(type, value2);
+                else{
+		  value.setValue(true);
+		}
                 break;
 
             // Arithmetic operators
@@ -701,6 +717,7 @@ public class Interp {
             case AslLexer.MUL:
             case AslLexer.DIV:
             case AslLexer.MOD:
+		operator = getStringOperator(type);
                 value2 = evaluateExpression(t.getChild(1));
                 checkInteger(value); checkInteger(value2);
                 value.evaluateArithmetic(type, value2);
@@ -709,6 +726,7 @@ public class Interp {
             // Boolean operators
             case AslLexer.AND:
             case AslLexer.OR:
+		operator = getStringOperator(type);
                 // The first operand is evaluated, but the second
                 // is deferred (lazy, short-circuit evaluation).
                 checkBoolean(value);

@@ -1,0 +1,6 @@
+func main()
+  inirobot 270,150,-90;
+  noobstacle green,blue;
+  pinta down;
+  avanca 10;
+endfunc

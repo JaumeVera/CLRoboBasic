@@ -1,0 +1,10 @@
+func main()
+inirobot 270,150,-90;
+noobstacle green,blue;
+pinta down;
+obstacle 100,100,100,100,red,red;
+if mirar 0 = red then
+gira 180;
+endif;
+avanca 10;
+endfunc

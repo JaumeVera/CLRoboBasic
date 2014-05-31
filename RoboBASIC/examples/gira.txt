@@ -1,0 +1,5 @@
+func main()
+  inirobot 270,150,-90;
+  gira 40;
+  avanca 10;
+endfunc
