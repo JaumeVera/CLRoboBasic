@@ -1,0 +1,23 @@
+func foo()
+  a = 90;
+  if a = 90 then
+    c = 30;
+    return;
+  else
+    a = 110;
+  endif;
+  b = 42;
+endfunc
+
+
+func main()
+inirobot 270,150,-90;
+noobstacle green,blue;
+pinta down;
+obstacle 100,100,100,100,red,red;
+while chocar do
+avanca 1;
+endwhile;
+foo();
+gira 20;
+endfunc
