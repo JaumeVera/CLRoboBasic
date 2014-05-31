@@ -705,7 +705,11 @@ public class Interp {
                 if (value.getType() != value2.getType()) {
                   throw new RuntimeException ("Incompatible types in relational expression");
                 }
-                if (!bitwise) value = value.evaluateRelational(type, value2);
+                if (!bitwise){
+					String aux = value.getEquivalent();
+					value = value.evaluateRelational(type, value2);
+					value.defineString(aux);
+				}
                 else{
 		  value.setValue(true);
 		}
