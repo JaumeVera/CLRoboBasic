@@ -100,7 +100,6 @@ instruction
 special_instruction
 	:	INIROBOT^ expr ','! expr ','! expr
 	|	AVAN^ expr
-	|	RETRO^ expr
 	|	NOBSTACLE^ COLOR (','! COLOR)?
 	|	GIRA^ expr
 	|	PINTARCOLOR^ ESTADOPINTAR
@@ -173,6 +172,7 @@ atom    :   ID (LBRACK^ expr RBRACK!)?
         |   funcall
         |   LPAREN^ expr ')'!
         |   sensors
+        |   COLOR
         ;
 
 // A function call has a lits of arguments in parenthesis (possibly empty)
@@ -213,7 +213,6 @@ TRUE    : 'true' ;
 FALSE   : 'false';
 INIROBOT: 'inirobot';
 AVAN	: 'avanca';
-RETRO	: 'retrocedeix';
 NOBSTACLE	: 'noobstacle';
 PINTARCOLOR	: 'pinta';
 OBSTACLE	: 'obstacle';

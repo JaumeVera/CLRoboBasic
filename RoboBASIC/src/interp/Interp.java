@@ -412,25 +412,25 @@ public class Interp {
 		instruct = "rFeel()";
 		if(prepare) programa.add(ident+instruct);
 		Data sent = new Data(true);
-		return sent;
+		return null;
 		
 	   case AslLexer.INFRA:
 		instruct = "rSense()";
 		if(prepare) programa.add(ident+instruct);
 		sent = new Data(true);
-		return sent;
+		return null;
 		
 	   case AslLexer.CHOCAR:
 		instruct = "rBumper()";
 		programa.add(ident+instruct);
 		sent = new Data(true);
-		return sent;
+		return null;
 		
 	   case AslLexer.ORIENTACION:
 		instruct = "rCompass()";
 		if(prepare) programa.add(ident+instruct);
 		Data comp = new Data(2,0);
-		return comp;
+		return null;
 		
 	   case AslLexer.DISTANCIACOLOR:
 		instruct = "rBeacon(";
@@ -439,7 +439,8 @@ public class Interp {
 		instruct += ")";
 		if(prepare) programa.add(ident+instruct);
 		Data distance = new Data(0);
-		return distance;
+		return null;
+		
            case AslLexer.MIRAR:
 		instruct = "rLook( ";
 		number = evaluateExpression(t.getChild(0));
@@ -447,8 +448,7 @@ public class Interp {
 		str = number.getEquivalent();
 		instruct += str;
 		if(prepare) programa.add(ident+instruct);
-		Data color = new Data("green");
-		return color;
+		return null;
 		
             // Function call
             case AslLexer.FUNCALL:
@@ -557,16 +557,20 @@ public class Interp {
                 value = new Data(t.getBooleanValue());
                 value.defineString(t.getText());
                 break;
+           case AslLexer.COLOR:
+		value = new Data(t.getText());
+		value.defineString(t.getText());
+		return value;
             
 	   case AslLexer.SENTIR:
 		String instruct = "rFeel()";
-		Data sent = new Data(true);
+		Data sent = new Data(0);
 		sent.defineString(instruct);
 		return sent;
 		
 	   case AslLexer.INFRA:
 		instruct = "rSense()";
-		sent = new Data(true);
+		sent = new Data(0);
 		sent.defineString(instruct);
 		return sent;
 		
@@ -578,7 +582,7 @@ public class Interp {
 		
 	   case AslLexer.ORIENTACION:
 		instruct = "rCompass()";
-		Data comp = new Data(2,0);
+		Data comp = new Data(0);
 		comp.defineString(instruct);
 		return comp;
             
