@@ -128,7 +128,7 @@ public class Asl{
 		BufferedWriter writer = null;
 		try {
 			    writer = new BufferedWriter(new OutputStreamWriter(
-			          new FileOutputStream(args[0] + ".java"), "utf-8"));
+			          new FileOutputStream(args[0] + ".BAS"), "utf-8"));
 			   
 			} catch (IOException ex) {
 			  // report
@@ -231,6 +231,7 @@ public class Asl{
         // Remaining arguments (the input file)
         String[] files = line.getArgs();
         if (files.length != 1) {
+        	
             System.err.println ("Incorrect command line.");
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp (cmdline, options);
