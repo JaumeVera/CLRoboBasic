@@ -113,7 +113,7 @@ sensors
 	|	CHOCAR^
 	|	DISTANCIACOLOR^ COLOR
 	|	ORIENTACION
-	|	MIRAR ^ expr
+	|	MIRAR ^ expr 'col'
 	;
   
 // Assignment
@@ -133,7 +133,7 @@ while_stmt	:	WHILE^ expr DO! block_instructions ENDWHILE!
             ;
 
 // Return statement with an expression
-return_stmt	:	RETURN^ expr?
+return_stmt	:	RETURN^
         ;
 
 // Read a variable

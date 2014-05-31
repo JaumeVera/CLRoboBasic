@@ -310,11 +310,7 @@ public class Interp {
 
             // Return
             case AslLexer.RETURN:
-                if (t.getChildCount() != 0) {
-		    Data a = new Data (evaluateExpression(t.getChild(0)));
-		    programa.add("Return "+a.getEquivalent());
-                    return a;
-                }
+                if(prepare) programa.add(ident+"Return");
                 return new Data(); // No expression: returns void data
 
             // Read statement: reads a variable and raises an exception
@@ -491,7 +487,7 @@ public class Interp {
       switch (type) {
 	// Relational operators
 	case AslLexer.EQUAL:
-	  return "== ";
+	  return " == ";
 	case AslLexer.NOT_EQUAL:
 	  return " != ";
 	case AslLexer.LT:
@@ -600,12 +596,23 @@ public class Interp {
 		}
 		break;
             
+	    case AslLexer.MIRAR:
+		instruct = "rLook(";
+		Data number = evaluateExpression(t.getChild(0));
+		checkInteger(number);
+		String str = number.getEquivalent();
+		instruct += str+')';
+		Data color = new Data("green");
+		color.defineString(instruct);
+		return color;
+            
 	    case AslLexer.LPAREN:
 		equivalent = "(";
 		value = evaluateExpression(t.getChild(0));
 		equivalent += value.getEquivalent();
 		equivalent += ")";
-		break;
+		value.defineString(equivalent);
+		return value;
             
             // Array
             case AslLexer.LBRACK:
@@ -662,23 +669,14 @@ public class Interp {
 		    Data distance = new Data(0);
 		    distance.defineString(instruct);
 		    return distance;
-		    
-	      case AslLexer.MIRAR:
-		    instruct = "rLook( ";
-		    Data number = evaluateExpression(t.getChild(0));
-		    checkInteger(number);
-		    str = number.getEquivalent();
-		    instruct += str;
-		    Data color = new Data("green");
-		    color.defineString(instruct);
-		    return color;
 		  
 	      case AslLexer.LPAREN:
 		  operator = "(";
 		  value.setData(evaluateExpression(t.getChild(0)));
 		  equivalent = value.getEquivalent();
 		  equivalent += ")";
-		  break;
+		  value.defineString(operator+equivalent);
+		  return value;
 	      default: assert false; // Should never happen
 	  }
 	  value.defineString(operator+equivalent);
@@ -706,10 +704,10 @@ public class Interp {
                   throw new RuntimeException ("Incompatible types in relational expression");
                 }
                 if (!bitwise){
-					String aux = value.getEquivalent();
-					value = value.evaluateRelational(type, value2);
-					value.defineString(aux);
-				}
+		  String aux = value.getEquivalent();
+		  value = value.evaluateRelational(type, value2);
+		  value.defineString(aux);
+		}
                 else{
 		  value.setValue(true);
 		}
@@ -722,10 +720,12 @@ public class Interp {
             case AslLexer.DIV:
             case AslLexer.MOD:
 		operator = getStringOperator(type);
-                value2 = evaluateExpression(t.getChild(1));
-                checkInteger(value); checkInteger(value2);
-                value.evaluateArithmetic(type, value2);
-                break;
+		String aux = value.getEquivalent();
+		value2 = evaluateExpression(t.getChild(1));
+		checkInteger(value); checkInteger(value2);
+		value.evaluateArithmetic(type, value2);
+		value.defineString(aux);
+		break;
 
             // Boolean operators
             case AslLexer.AND:
@@ -733,8 +733,10 @@ public class Interp {
 		operator = getStringOperator(type);
                 // The first operand is evaluated, but the second
                 // is deferred (lazy, short-circuit evaluation).
+                aux = value.getEquivalent();
                 checkBoolean(value);
                 value = evaluateBoolean(type, value, t.getChild(1));
+                value.defineString(aux);
                 break;
 
             default: assert false; // Should never happen
